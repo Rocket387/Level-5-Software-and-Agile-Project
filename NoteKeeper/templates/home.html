@@ -12,12 +12,25 @@
     </button>
   </li>
   {% endfor %}
-</ul>
-<form method="POST">
-    <textarea name="note" id="note" class="form-control"></textarea>
-    <br />
-    <div class="center">
-        <button type="submit" class="btn btn-primary">Add Note</button>
-    </div>
-</form>
+  <body>
+    <table>
+        <tr>
+            <th>Date & Time</th>
+            <th>Notes</th>
+        </tr>
+    {%-for row in eventsList-%}
+        <tr>
+            <td>{{row.date}}</td>
+            <td>{{row.info}}</td>
+        </tr>
+    {%-endfor-%}
+    </table>
+    <hr/>
+    <form method="post">
+        <title>Add Note</title>
+        <label for="eventBox">Note Information</label>
+        <input name="eventBox" id="eventBox" required/>
+        <input type="submit" value = "Add">
+    </form>
+</body>
 {%endblock%} 

@@ -19,7 +19,7 @@ def login():
         if user:
             if check_password_hash(user.password,password):
                 flash('Logged in successfully', category='success')
-                login_user(user,remember=False)
+                login_user(user,remember=True)
                 return redirect(url_for('views.home'))
             else:
                 flash('Incorrect password, try again', category='error')
@@ -38,11 +38,11 @@ def signup():
         password2=request.form.get('password2')
         user=User.query.filter_by(email=email).first()
         if user:
-            flash('Email already exists',catergory='error')
+            flash('Email already exists',category='error')
         elif len(email)<4:
             flash('Email must be greater than 3 characters', category='error')
         elif len(firstName)<2:
-            flash('First nme must be greater than 1 character',category='error')
+            flash('First name must be greater than 1 character',category='error')
         elif password1!=password2:
             flash('Passwords do not match',category='error')
         elif len(password1)<7:
@@ -52,7 +52,7 @@ def signup():
             db.session.add(new_user)
             db.session.commit()
             flash('Account created',category='success')
-            login_user(user,remember=False)
+            login_user(user,remember=True)
             return redirect(url_for('views.home'))
         
     return render_template("signup.html",user=current_user)
@@ -62,5 +62,6 @@ def signup():
 def logout():
     if login_user(current_user):
         flash('Logged out successfully', category='success')
-
-    return redirect(url_for('auth.login'))
+        return redirect(url_for('auth.login'))
+    
+    return render_template("home.html",user=current_user)
