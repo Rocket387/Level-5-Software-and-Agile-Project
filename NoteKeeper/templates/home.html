@@ -6,22 +6,33 @@
 <ul class="list-group list-group-flush" id="notes">
   {% for note in user.notes %}
   <li class="list-group-item">
-    {{ note.data }}
-    <button type="button" class="close" onClick="deleteNote({{note.id}})">
-      <span aria-hidden="true">&times;</span>
-    </button>
+    {{ note.info }}
   </li>
   {% endfor %}
   <body>
     <table>
         <tr>
-            <th>Date & Time</th>
+            <th>Alias</th>
+            <th>Date</th>
             <th>Notes</th>
+            <th>Actions</th>
         </tr>
     {%-for row in eventsList-%}
         <tr>
-            <td>{{row.date}}</td>
+            <td>{{row.user.alias}}</td>
+            <td>{{row.date.strftime('%d-%m-%Y')}}</td>
             <td>{{row.info}}</td>
+            <td>
+              <form method="POST" action="{{url_for('views.edit_note', note_id=row.id) }}" style="display:inline;">
+                <input type="text" name="updated_info" value="{{ row.info }}" required/>
+                <button type="submit">Edit</button>
+              </form>
+            </td>
+            <td>
+              {% if current_user.has_role('Admin') %}
+              <a href="{{ url_for('views.delete_note', note_id=row.id) }}">Delete</a>
+              {%endif%}
+            </td>
         </tr>
     {%-endfor-%}
     </table>

@@ -1,14 +1,16 @@
 #importing required libraries and routes
 import sqlite3  # importing sqlite3 database
 from flask import Flask
-from flask_sqlalchemy import SQLAlchemy
+from .extensions import db
 from os import path
 from flask_login import LoginManager
+from werkzeug.security import generate_password_hash
+from .models import User, Role
 
 ##### this file sets up the app #####
 
 # SQLAlchemy is a Python toolkit that simplifies database integration with web apps
-db = SQLAlchemy()
+
 DB_NAME = 'PVWebAPPDB.db'
 
 # function to create the web app, initializes database
@@ -29,7 +31,10 @@ def create_app():
     
     from .models import User, Note
 
-    create_database(app)
+    with app.app_context():
+        create_database(app)
+        create_roles()
+        create_admin_user()
 
     login_manager=LoginManager()
     login_manager.login_view='auth.login'
@@ -43,6 +48,40 @@ def create_app():
 
 def create_database(app):
     if not path.exists('app/' + DB_NAME):
-        with app.app_context():
-            db.create_all()
-        print('Created Databse')
+        db.create_all()
+        print('Created Database')
+    else:
+        print('Database already exits')
+
+def create_roles():
+    # Check if roles already exist to avoid duplication
+    if not Role.query.filter_by(roleName='Admin').first():
+        admin = Role(roleName='Admin')
+        db.session.add(admin)
+    
+    if not Role.query.filter_by(roleName='User').first():
+        user = Role(roleName='User')
+        db.session.add(user)
+    
+    db.session.commit()
+    print("Roles created successfully!")
+
+def create_admin_user():
+
+    # Assign admin role to the admin user
+    admin_role = Role.query.filter_by(roleName='Admin').first()
+
+    # Check if the admin user exists
+    if not User.query.filter_by(email='admin@example.com').first():
+        admin_user = User(
+            email='admin@example.com',
+            alias='Admin',
+            password=generate_password_hash('adminpass', method='pbkdf2:sha256'),
+            role=admin_role
+        )
+        db.session.add(admin_user)
+        db.session.commit()
+        print('Admin user created.')
+    else:
+        print('Admin user already exists.')
+

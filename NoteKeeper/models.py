@@ -1,19 +1,38 @@
-from . import db
+from .extensions import db
 from flask_login import UserMixin
 from sqlalchemy.sql import func
 
 #### Object Relational Mapping for database ####
 
 class Note(db.Model):
-    id = db.Column(db.Integer,primary_key=True)
+    id = db.Column(db.Integer, primary_key=True)
     info = db.Column(db.String(10000))
-    date = db.Column(db.DateTime(timezone=True),default=func.now())
-    user_id = db.Column(db.Integer,db.ForeignKey('user.id'))
+    date = db.Column(db.Date, default=func.current_date())
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    role_id = db.Column(db.Integer, db.ForeignKey('role.id'))
+
+    # Define relationship back to user and role
+    user = db.relationship('User', back_populates='notes')
+    role = db.relationship('Role', back_populates='notes')
 
 class User(db.Model, UserMixin):
-    id = db.Column(db.Integer,primary_key=True)
-    email = db.Column(db.String(150),unique=True)
+    id = db.Column(db.Integer, primary_key=True)
+    email = db.Column(db.String(150), unique=True)
     password = db.Column(db.String(150))
-    firstName = db.Column(db.String(150))
-    
-    
+    alias = db.Column(db.String(150))
+    role_id = db.Column(db.Integer, db.ForeignKey('role.id'))
+
+    # Define relationship back to role and note
+    role = db.relationship('Role', back_populates='users')
+    notes = db.relationship('Note', back_populates='user', cascade="all, delete-orphan")
+
+    def has_role(self, role_name):
+        return self.role and self.role.roleName == role_name
+
+class Role(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    roleName = db.Column(db.String(150), unique=True)
+
+    # Define relationship back to users and notes
+    users = db.relationship('User', back_populates='role')
+    notes = db.relationship('Note', back_populates='role')
