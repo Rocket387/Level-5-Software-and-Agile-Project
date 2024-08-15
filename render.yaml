@@ -4,7 +4,7 @@ services:
     env: python
     region: Frankfurt # or another region close to your users
     buildCommand: pip install -r requirements.txt
-    startCommand: gunicorn main:app
+    startCommand: gunicorn __init__:app
     envVars:
       - key: SECRET_KEY
         value: "85cab4e486a7bbaecbaea9420447fe59"
