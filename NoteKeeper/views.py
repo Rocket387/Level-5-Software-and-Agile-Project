@@ -10,42 +10,48 @@ from datetime import datetime
 
 views = Blueprint('views',__name__)
 
+#home page fetches, adds and edits data from the database
 @views.route('/', methods=['GET', 'POST'])
+#login is required for user to access this page
 @login_required
 def home():
     if request.method == 'POST':
-        note_content = request.form.get('eventBox')  # Note input field
+        note_content = request.form.get('eventBox')  #note input field
         
+        #validation rule ensures note is not just one letter
         if len(note_content) < 1:
             flash('Note is too short', category='error')
         else:
-            # Create a new Note object with the current datetime and the note content
+            #new Note created with the current date and the note content
             new_note = Note(info=note_content, date=datetime.now(), user_id=current_user.id)
             
-            # Add and commit the new note to the database
+            #adds new note to the database
             db.session.add(new_note)
             db.session.commit()
             flash('Note added', category='success')
         
-        # Redirect to avoid form resubmission issues
+        #redirect to prevent resubmission issues
         return redirect(url_for('views.home'))
 
-    # Query all notes and order by date for the homepage
+    #queries all notes and orders them by date for the homepage
     events_list = db.session.query(Note).join(User).order_by(Note.date).all()
-    
+   
+   #redirect to prevent resubmission issues
     return render_template('home.html', user=current_user, eventsList=events_list)
 
+#function permits users to edit their notes
 @views.route('/edit-note/<int:note_id>', methods=['POST'])
 @login_required
 def edit_note(note_id):
     note = Note.query.get_or_404(note_id)
 
-    #Ensure current user is owner of the note
+    #checks current user owns the note otherwise they cannot edit it
     if note.user_id != current_user.id:
         flash('You do not have permission to edit this note!', category='error')
+        #redirect to prevent resubmission issues
         return redirect(url_for('views.home'))
     
-    #update the note with the new info from the form
+    #if user owns the note checks and edited information contains at least one letter note will be updated
     updated_info = request.form.get('updated_info')
     if updated_info and len(updated_info) > 0:
         note.info = updated_info
@@ -53,21 +59,26 @@ def edit_note(note_id):
         db.session.commit()
         flash('Note successfully updated!', category='success')
     else:
+        #lets the user know edits must be at least 1 character change
         flash('Note content cannot be empty', category='error')
     
+    #redirect to prevent resubmission issues
     return redirect(url_for('views.home'))
 
+#function for Admin users to delete notes
 @views.route('/delete-note/<int:note_id>')
 @login_required
 def delete_note(note_id):
     note = Note.query.get_or_404(note_id)
-
+    #checks users roleName is equivalent to Admin
     if current_user.role.roleName != 'Admin':
         flash('You do not have permission to delete this note.', category='error')
         return redirect(url_for('views.home'))
 
+    #if Admin user note is deleted when delete button is clicked
     db.session.delete(note)
     db.session.commit()
     flash('Note deleted successfully.', category='success')
 
+    #redirect to prevent resubmission issues
     return redirect(url_for('views.home'))

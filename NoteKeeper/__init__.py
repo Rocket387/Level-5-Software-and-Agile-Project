@@ -1,25 +1,23 @@
 #importing required libraries and routes
-import sqlite3  # importing sqlite3 database
 from flask import Flask
 from .extensions import db
 from os import path
 from flask_login import LoginManager
 from werkzeug.security import generate_password_hash
 from .models import User, Role
+from .config import Config
 
 ##### this file sets up the app #####
 
-# SQLAlchemy is a Python toolkit that simplifies database integration with web apps
+
 
 DB_NAME = 'PVWebAPPDB.db'
 
 # function to create the web app, initializes database
-def create_app():
+def create_app(config_class=Config):
     app = Flask(__name__)
+    app.config.from_object(config_class)
 
-    # securely generated secret key to manage sessions and protect against CSRF attacks
-    app.config['SECRET_KEY'] = '85cab4e486a7bbaecbaea9420447fe59'
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///PVWebAppDB.db'
     db.init_app(app)
 
     # Define routes here or in a separate file/module and import them
@@ -68,10 +66,10 @@ def create_roles():
 
 def create_admin_user():
 
-    # Assign admin role to the admin user
+    #assigns admin role to the admin user
     admin_role = Role.query.filter_by(roleName='Admin').first()
 
-    # Check if the admin user exists
+    #checks admin user exists
     if not User.query.filter_by(email='admin@example.com').first():
         admin_user = User(
             email='admin@example.com',
