@@ -13,7 +13,7 @@ from .config import Config
 
 DB_NAME = 'PVWebAPPDB.db'
 
-# function to create the web app, initializes database
+# function to create the web app, initializes database, create roles, admin and add notes
 def create_app(config_class=Config):
     app = Flask(__name__)
     app.config.from_object(config_class)
@@ -33,6 +33,7 @@ def create_app(config_class=Config):
         create_database(app)
         create_roles()
         create_admin_user()
+        create_notes()
 
     login_manager=LoginManager()
     login_manager.login_view='auth.login'
@@ -44,6 +45,7 @@ def create_app(config_class=Config):
 
     return app
 
+#fucntion to create app database
 def create_database(app):
     if not path.exists('app/' + DB_NAME):
         db.create_all()
@@ -51,6 +53,7 @@ def create_database(app):
     else:
         print('Database already exits')
 
+#fucntion to create 2 roles, Admin or User
 def create_roles():
     # Check if roles already exist to avoid duplication
     if not Role.query.filter_by(roleName='Admin').first():
@@ -64,6 +67,7 @@ def create_roles():
     db.session.commit()
     print("Roles created successfully!")
 
+#function to assign Admin role to Admin
 def create_admin_user():
 
     #assigns admin role to the admin user
@@ -74,7 +78,7 @@ def create_admin_user():
         admin_user = User(
             email='admin@example.com',
             alias='Admin',
-            password=generate_password_hash('adminpass', method='pbkdf2:sha256'),
+            password=generate_password_hash('adminpass', method='pbkdf2:sha256'), #adding a salt and hashing password with shah256
             role=admin_role
         )
         db.session.add(admin_user)
@@ -83,3 +87,17 @@ def create_admin_user():
     else:
         print('Admin user already exists.')
 
+#fucntion to create notes, this ensures the database will always start with some data
+#incase data added from the web app itself does not persist due to the web server Render
+def create_notes():
+    
+    #creating sample users array
+    users = []
+    for i in range(1, 6): #creates 5 users
+        email = f'user{i}@example.com'
+        alias = f'User{i}'
+        user = User.query.filter_by(email=email).first()
+        if not user:
+            email=email
+            alias=alias
+            password=generate_password_hash('password', method='pbkdf2:shah256')

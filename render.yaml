@@ -7,6 +7,6 @@ services:
     startCommand: gunicorn main:app
     envVars:
       - key: SECRET_KEY
-        value: "1e02e0be94a7e186c84d92712e250cc4"
+        value: "ENTER-KEY"
       - key: DATABASE_URL
         value: "sqlite:///PVWebAppDB.db"

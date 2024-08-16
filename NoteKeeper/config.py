@@ -4,7 +4,7 @@ import os
 # config.py
 #config file to setup database for webapp in production, development and Test
 class Config:
-    SECRET_KEY = '1e02e0be94a7e186c84d92712e250cc4'
+    SECRET_KEY = 'ENTER-KEY'
     SQLALCHEMY_DATABASE_URI = 'sqlite:///PVWebAppDB.db'
     SQLALCHEMY_TRACK_MODIFICATIONS = False  # Disable tracking to save resources
     DEBUG = False  # Disable debugging by default

@@ -3,6 +3,8 @@ from .models import User, Role
 from werkzeug.security import generate_password_hash, check_password_hash
 from . import db
 from flask_login import login_user, login_required, logout_user, current_user
+from .forms import LoginForm, SignupForm
+
 
 #### authentication routes for web app ####
 
@@ -11,50 +13,44 @@ auth = Blueprint('auth', __name__)
 #login route
 @auth.route('/login', methods=['GET', 'POST'])
 def login():
+    form = LoginForm() #creates an instance of the LoginFom
+
     #user enters email and password
-    if request.method=='POST':
-        email=request.form.get('email')
-        password=request.form.get('password')
+    if form.validate_on_submit():
+        email = form.email.data
+        password = form.password.data
 
     #checks users password and navigates to home page if correct data is entered
-        user = User.query.filter_by(email=email).first()
-        if user:
-            if check_password_hash(user.password,password):
+        user = User.query.filter_by(email=email).first() #SQLAlchemy querying method.
+        if user and check_password_hash(user.password,password):
                 flash('Logged in successfully', category='success')
                 login_user(user,remember=True)
                 return redirect(url_for('views.home'))
-            else:
-                #comment lets user know if they have entered their password incorrectly
-                flash('Incorrect password, try again', category='error')
         else:
-            #comment lets user know their email does not exist and they need to sign up
-            flash('Email does not exist. Please sign up first', category='error')
-    
+            #comment lets user know if they have entered their email or password incorrectly
+            flash('Incorrect email or password, try again', category='error')
+
     #redirect to prevent resubmission issues
-    return render_template('login.html', category='error')
+    return render_template('login.html', form=form)
 
 #signup route
 @auth.route('/signup',methods=['GET','POST'])
 def signup():
+    form = SignupForm() #creates instanace of sign up form
     #User enters information to sign up to the note keeper
-    if request.method=='POST':
-        email=request.form.get('email')
-        alias=request.form.get('alias')
-        password1=request.form.get('password1')
-        password2=request.form.get('password2')
+    if form.validate_on_submit():
+        email = form.email.data
+        alias = form.alias.data
+        password1 = form.password1.data
+        password2 = form.password2.data
+
         user=User.query.filter_by(email=email).first()
 
         #requirements for successful sign up, if user enters incorrect data a comment will flash up for them
         if user:
             flash('Email already exists',category='error')
-        elif len(email)<4:
-            flash('Email must be greater than 3 characters', category='error')
-        elif len(alias)<2:
-            flash('alias must be greater than 1 character',category='error')
         elif password1!=password2:
             flash('Passwords do not match',category='error')
-        elif len(password1)<7:
-            flash('Password must be greater than 6 characters',category='error')
         else:
             #new user is added to the database and password is hashed for security, user is directed to home page
             new_user = User(email=email,alias=alias,password=generate_password_hash(password1))
@@ -65,7 +61,7 @@ def signup():
             return redirect(url_for('views.home'))
         
         #redirect to prevent resubmission issues
-    return render_template("signup.html",user=current_user)
+    return render_template("signup.html", form=form)
 
 #logout route
 @auth.route('/logout')
@@ -75,3 +71,4 @@ def logout():
         logout_user()
         flash('Logged out successfully', category='success')
         return redirect(url_for('auth.login'))
+
