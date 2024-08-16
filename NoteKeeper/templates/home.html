@@ -24,7 +24,7 @@
             <td>{{row.info}}</td>
             <td>
               <form method="POST" action="{{url_for('views.edit_note', note_id=row.id) }}" style="display:inline;">
-                <input type="text" name="updated_info" value="{{ row.info }}" required/>
+                <input type="text" name="updated_info" value="" required/>
                 <button type="submit">Edit</button>
               </form>
             </td>

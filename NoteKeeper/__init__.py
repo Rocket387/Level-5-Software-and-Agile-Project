@@ -4,8 +4,9 @@ from .extensions import db
 from os import path
 from flask_login import LoginManager
 from werkzeug.security import generate_password_hash
-from .models import User, Role
+from .models import User, Role, Note
 from .config import Config
+from datetime import datetime, timedelta
 
 ##### this file sets up the app #####
 
@@ -87,10 +88,16 @@ def create_admin_user():
     else:
         print('Admin user already exists.')
 
-#fucntion to create notes, this ensures the database will always start with some data
+#function to create notes, this ensures the database will always start with some data
 #incase data added from the web app itself does not persist due to the web server Render
 def create_notes():
-    
+    user_count = User.query.count()
+    note_count = Note.query.count()
+
+    # If there are already users or notes in the database, don't run this function
+    if user_count > 0 or note_count > 0:
+        print("Database already has users or notes, skipping note creation.")
+        return 
     #creating sample users array
     users = []
     for i in range(1, 6): #creates 5 users
@@ -98,6 +105,23 @@ def create_notes():
         alias = f'User{i}'
         user = User.query.filter_by(email=email).first()
         if not user:
-            email=email
-            alias=alias
-            password=generate_password_hash('password', method='pbkdf2:shah256')
+            user = User(
+                email=email,
+                alias=alias,
+                password=generate_password_hash('password', method='pbkdf2:sha256')  # Corrected method
+            )
+            db.session.add(user)
+            db.session.commit()
+        users.append(user)
+    
+    for i in range(10):
+        note_user = users[i % len(users)]
+        note = Note(
+            info=f'Note {i+1} by {note_user.alias}',
+            date=datetime.utcnow() - timedelta(days=i),
+            user_id=note_user.id
+        )
+        db.session.add(note)
+
+    db.session.commit()
+    print('Created 10 notes for different users.')
