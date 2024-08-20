@@ -42,6 +42,16 @@ class TestApp(unittest.TestCase):
         #Test admin can log in
         response = self.client.post('/login', data=dict(email='admin@example.com', password='adminpass'), follow_redirects=True)
         self.assertIn(b'Logged in successfully', response.data)
+    
+    def test_user_login(self):
+        #Test admin can log in
+        response = self.client.post('/login', data=dict(email='user1@example.com', password='password'), follow_redirects=True)
+        self.assertIn(b'Logged in successfully', response.data)
+
+    def test_user_incorrect_login(self):
+        #Test admin can log in
+        response = self.client.post('/login', data=dict(email='user1@example.com', password='test1abc'), follow_redirects=True)
+        self.assertIn(b'Incorrect email or password, try again', response.data)
 
     def test_note_creation(self):
         #Test if admin can create a note
@@ -54,3 +64,26 @@ class TestApp(unittest.TestCase):
         response = self.client.post('/signup', data=dict(email='user1@example.com', alias='user1', password1='test1abc', password2= 'test1abc'), follow_redirects=True)
         self.assertIn(b'Account created', response.data)
        
+    def test_user_logout(self):
+        #Test user can logout
+        response = self.client.post('/logout')
+        self.assertIn(b'Logged out successfully', response.data)
+
+
+ ####
+ # def test_note_delete(self):
+       # response = if current_user.role.roleName == 'Admin':
+       # self.assertIn(b'Note deleted successfully.', response.data)
+
+    #def test_user_cannot_delete_note(self):
+       #response = if current_user.role.roleName != 'Admin':
+        #self.assertIn(b'You do not have permission to delete this note.', response.data)
+
+    #def test_note_edit(self):
+       # response = '/edit-note/<int:note_id>
+       #self.assertIn(b'Note successfully updated!', response.data)
+
+   # def test_user_cannot_edit_note(self):
+       # response = '/edit-note/<int:note_id>
+       # self.assertIn(b'You do not have permission to edit this note!', response.data)
+ #    
