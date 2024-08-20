@@ -16,24 +16,20 @@ class TestApp(unittest.TestCase):
         self.app_context = self.app.app_context()
         self.app_context.push()
 
-        #create database and add initial data
+        # Create database and add initial data
         db.create_all()
 
-        # create roles
-        self.admin_role = Role(roleName='Admin')
-        self.user_role = Role(roleName='User')
-        db.session.add(self.admin_role)
-        db.session.add(self.user_role)
-        db.session.commit()
+        # Check if the roles already exist before adding them
+        self.admin_role = Role.query.filter_by(roleName='Admin').first()
+        if not self.admin_role:
+            self.admin_role = Role(roleName='Admin')
+            db.session.add(self.admin_role)
 
-        #create admin user
-        self.admin_user = User(
-            email='admin@example.com',
-            alias='Admin',
-            password='adminpass',
-            role=self.admin_role
-        )
-        db.session.add(self.admin_user)
+        self.user_role = Role.query.filter_by(roleName='User').first()
+        if not self.user_role:
+            self.user_role = Role(roleName='User')
+            db.session.add(self.user_role)
+
         db.session.commit()
 
     def tearDown(self):
@@ -45,10 +41,16 @@ class TestApp(unittest.TestCase):
     def test_admin_login(self):
         #Test admin can log in
         response = self.client.post('/login', data=dict(email='admin@example.com', password='adminpass'), follow_redirects=True)
-        self.assertIn(b'Logged in succcessfully', response.data)
+        self.assertIn(b'Logged in successfully', response.data)
 
     def test_note_creation(self):
         #Test if admin can create a note
         self.client.post('/login', data=dict(email='admin@example.com', password='adminpass'), follow_redirects=True)
         response = self.client.post('/', data=dict(eventBox='Test Note'), follow_redirects=True)
         self.assertIn(b'Test Note', response.data)
+
+    def test_user_signup(self):
+        #Test user can sign up
+        response = self.client.post('/signup', data=dict(email='user1@example.com', alias='user1', password1='test1abc', password2= 'test1abc'), follow_redirects=True)
+        self.assertIn(b'Account created', response.data)
+       

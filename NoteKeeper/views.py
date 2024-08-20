@@ -8,6 +8,7 @@ from datetime import datetime
 
 #### routes/pages for web app ####
 
+#blueprint organizes related views and code
 views = Blueprint('views',__name__)
 
 #home page fetches, adds and edits data from the database
@@ -39,7 +40,7 @@ def home():
    #redirect to prevent resubmission issues
     return render_template('home.html', user=current_user, eventsList=events_list)
 
-#function permits users to edit their notes
+#function permits users to edit their notes, base path and variable for note_id to identify which note to edit
 @views.route('/edit-note/<int:note_id>', methods=['POST'])
 @login_required
 def edit_note(note_id):

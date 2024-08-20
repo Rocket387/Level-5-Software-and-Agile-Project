@@ -1,35 +1,37 @@
 #importing required libraries and routes
-from flask import Flask
-from .extensions import db
-from os import path
-from flask_login import LoginManager
-from werkzeug.security import generate_password_hash
-from .models import User, Role, Note
-from .config import Config
-from datetime import datetime, timedelta
+from flask import Flask #adds Flask framework for URL routing and page rendering
+from .extensions import db #imports SQL Alchemy from extensions, separate to prevent circular calls
+from os import path #for local runs
+from flask_login import LoginManager #handles users logging in and out sessions
+from werkzeug.security import generate_password_hash #secure checks for passwords and hashing passwords
+from .models import User, Role, Note #importing classes in models.py
+from .config import Config #importing Config class in config.py
+from datetime import datetime, timedelta #imports datetime for database entries
 
 ##### this file sets up the app #####
 
 
 
-DB_NAME = 'PVWebAPPDB.db'
+DB_NAME = 'PVWebAPPDB.db' #variable to name the database for web app
 
 # function to create the web app, initializes database, create roles, admin and add notes
 def create_app(config_class=Config):
     app = Flask(__name__)
     app.config.from_object(config_class)
 
-    db.init_app(app)
+    db.init_app(app) #initializes app for use with database
 
-    # Define routes here or in a separate file/module and import them
+    # Defines routes for web app
     from .views import views
     from .auth import auth
 
+    #importing and registering the blueprint from the factory in views.py and auth.py
     app.register_blueprint(views, url_prefix='/')
     app.register_blueprint(auth, url_prefix='/')
     
     from .models import User, Note
 
+    #setting up database and initializing it with the function calls
     with app.app_context():
         create_database(app)
         create_roles()
@@ -40,13 +42,14 @@ def create_app(config_class=Config):
     login_manager.login_view='auth.login'
     login_manager.init_app(app)
 
+    #decorator ensures load_user function is used to retrieve user by ID
     @login_manager.user_loader
     def load_user(id):
-        return User.query.get(int(id))
+        return User.query.get(int(id)) #retrieves user id from database using SQLAlchemy
 
     return app
 
-#fucntion to create app database
+#function to create app database if it does not already exist
 def create_database(app):
     if not path.exists('app/' + DB_NAME):
         db.create_all()
@@ -54,9 +57,9 @@ def create_database(app):
     else:
         print('Database already exits')
 
-#fucntion to create 2 roles, Admin or User
+#function to create 2 roles, Admin or User
 def create_roles():
-    # Check if roles already exist to avoid duplication
+    # Check if Admin and User roles already exist to avoid duplication
     if not Role.query.filter_by(roleName='Admin').first():
         admin = Role(roleName='Admin')
         db.session.add(admin)
@@ -88,8 +91,7 @@ def create_admin_user():
     else:
         print('Admin user already exists.')
 
-#function to create notes, this ensures the database will always start with some data
-#incase data added from the web app itself does not persist due to the web server Render
+#Used this function to prepopulate the database with data and users
 def create_notes():
     user_count = User.query.count()
     note_count = Note.query.count()
@@ -103,17 +105,18 @@ def create_notes():
     for i in range(1, 6): #creates 5 users
         email = f'user{i}@example.com'
         alias = f'User{i}'
-        user = User.query.filter_by(email=email).first()
-        if not user:
+        user = User.query.filter_by(email=email).first() #checks for users email in database
+        if not user: #creates if does not already exist
             user = User(
                 email=email,
                 alias=alias,
-                password=generate_password_hash('password', method='pbkdf2:sha256')  # Corrected method
+                password=generate_password_hash('password', method='pbkdf2:sha256')
             )
-            db.session.add(user)
+            db.session.add(user) #adds user to database
             db.session.commit()
         users.append(user)
     
+    #creates 10 notes by the 5 users with different dates
     for i in range(10):
         note_user = users[i % len(users)]
         note = Note(

@@ -8,10 +8,11 @@ from .forms import LoginForm, SignupForm
 
 #### authentication routes for web app ####
 
+#blueprint organizes related code for authentication
 auth = Blueprint('auth', __name__)
 
-#login route
-@auth.route('/login', methods=['GET', 'POST'])
+#@auth.route decorator defines URL for and HTTP methods for login route
+@auth.route('/login', methods=['GET', 'POST']) # POST to send/submit data, GET shows/requests data from server
 def login():
     form = LoginForm() #creates an instance of the LoginFom
 
