@@ -71,5 +71,6 @@ def logout():
     if login_user(current_user):
         logout_user()
         flash('Logged out successfully', category='success')
-        return redirect(url_for('auth.login'))
+    
+    return redirect(url_for('auth.login'))
 

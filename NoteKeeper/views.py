@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template, request, flash, jsonify, redirect,url_for
-from flask_login import login_required, current_user
+from flask_login import login_required, current_user, login_user, logout_user
 from .models import Note, User
 from . import db
 import json
@@ -83,3 +83,12 @@ def delete_note(note_id):
 
     #redirect to prevent resubmission issues
     return redirect(url_for('views.home'))
+
+#logout route
+@views.route('/logout')
+def logout():
+    #Logs user out, user is shown successful logout comment and shown login page
+    if login_user(current_user):
+        logout_user()
+        flash('Logged out successfully', category='success')
+    return redirect(url_for('auth.login'))

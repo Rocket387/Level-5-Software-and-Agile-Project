@@ -2,9 +2,9 @@ import unittest
 from NoteKeeper import create_app, db
 from NoteKeeper.models import User, Note, Role
 from NoteKeeper.config import TestingConfig
+from werkzeug.security import generate_password_hash, check_password_hash
 
 #### unit tests for webapp ####
-### unsuccessful tests at the moment
 
 class TestApp(unittest.TestCase):
 
@@ -30,6 +30,10 @@ class TestApp(unittest.TestCase):
             self.user_role = Role(roleName='User')
             db.session.add(self.user_role)
 
+        self.admin_user = User(role=self.admin_role, email='admin@test.com', password=generate_password_hash('adminpass'))
+        self.non_admin_user = User(role=self.user_role, email='user@test.com', password=generate_password_hash('userpass'))
+        db.session.add(self.admin_user)
+        db.session.add(self.non_admin_user)
         db.session.commit()
 
     def tearDown(self):
@@ -40,18 +44,21 @@ class TestApp(unittest.TestCase):
 
     def test_admin_login(self):
         #Test admin can log in
-        response = self.client.post('/login', data=dict(email='admin@example.com', password='adminpass'), follow_redirects=True)
-        self.assertIn(b'Logged in successfully', response.data)
+        with self.client as client:
+            response = self.client.post('/login', data=dict(email='admin@test.com', password='adminpass'), follow_redirects=True)
+            self.assertIn(b'Logged in successfully', response.data)
     
     def test_user_login(self):
         #Test admin can log in
-        response = self.client.post('/login', data=dict(email='user1@example.com', password='password'), follow_redirects=True)
-        self.assertIn(b'Logged in successfully', response.data)
+        with self.client as client:
+            response = self.client.post('/login', data=dict(email='user@test.com', password='userpass'), follow_redirects=True)
+            self.assertIn(b'Logged in successfully', response.data)
 
     def test_user_incorrect_login(self):
         #Test admin can log in
-        response = self.client.post('/login', data=dict(email='user1@example.com', password='test1abc'), follow_redirects=True)
-        self.assertIn(b'Incorrect email or password, try again', response.data)
+        with self.client as client:
+            response = self.client.post('/login', data=dict(email='user@test.com', password='test1abc'), follow_redirects=True)
+            self.assertIn(b'Incorrect email or password, try again', response.data)
 
     def test_note_creation(self):
         #Test if admin can create a note
@@ -61,29 +68,47 @@ class TestApp(unittest.TestCase):
 
     def test_user_signup(self):
         #Test user can sign up
-        response = self.client.post('/signup', data=dict(email='user1@example.com', alias='user1', password1='test1abc', password2= 'test1abc'), follow_redirects=True)
-        self.assertIn(b'Account created', response.data)
-       
+        with self.client as client:
+            response = self.client.post('/signup', data=dict(email='user1@example.com', alias='user1', password1='test1abc', password2= 'test1abc'), follow_redirects=True)
+            self.assertIn(b'Account created', response.data)
+
+    def test_user_signup_error(self):
+        with self.client as client:
+            response = self.client.post('/signup', data=dict(email='user1@example.com', alias='user1', password1='test1abc', password2= 'abc'), follow_redirects=True)
+            self.assertIn(b'Passwords do not match', response.data)
+
     def test_user_logout(self):
         #Test user can logout
-        response = self.client.post('/logout')
-        self.assertIn(b'Logged out successfully', response.data)
+        with self.client as client:
+            self.client.post('/login', data=dict(email='user@test.com', password='userpass'), follow_redirects=True)
+            response = self.client.get('/logout', follow_redirects=True)
+            self.assertIn(b'Logged out successfully', response.data)
 
+###
 
- ####
- # def test_note_delete(self):
-       # response = if current_user.role.roleName == 'Admin':
-       # self.assertIn(b'Note deleted successfully.', response.data)
+    def test_note_delete(self):
+       with self.client as client:
+            response = self.client.post('/login', data=dict(email='admin@test.com', password='adminpass'), follow_redirects=True)
+            response = self.client.get('/', follow_redirects=True)
+            response = self.client.delete('/', '/delete-note/<int:note_id>', follow_redirects=True)
+            self.assertIn(b'Note deleted successfully.', response.data)
+            
 
-    #def test_user_cannot_delete_note(self):
-       #response = if current_user.role.roleName != 'Admin':
-        #self.assertIn(b'You do not have permission to delete this note.', response.data)
+    def test_user_cannot_delete_note(self):
+        with self.client as client:
+            response = self.client.post('/login', data=dict(email='user@test.com', password='userpass'), follow_redirects=True)
+            response = self.client.delete('/delete-note/<int:note_id>')
+            self.assertIn(b'You do not have permission to delete this note.', response.data)
 
-    #def test_note_edit(self):
-       # response = '/edit-note/<int:note_id>
-       #self.assertIn(b'Note successfully updated!', response.data)
+    def test_note_edit(self):
+       with self.client as client:
+            response = self.client.post('/login', data=dict(email='user@test.com', password='userpass'), follow_redirects=True) 
+            response = self.client.post('/edit-note/<int:note_id>')
+            self.assertIn(b'Note successfully updated!', response.data)
 
-   # def test_user_cannot_edit_note(self):
-       # response = '/edit-note/<int:note_id>
-       # self.assertIn(b'You do not have permission to edit this note!', response.data)
- #    
+    def test_user_cannot_edit_note(self):
+       with self.client as client:
+            response = self.client.post('/login', data=dict(email='user@test.com', password='userpass'), follow_redirects=True)
+            response = self.client.post('/edit-note/<int:note_id>')
+            self.assertIn(b'You do not have permission to edit this note!', response.data)
+    
