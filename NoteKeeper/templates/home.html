@@ -39,16 +39,23 @@
             </td>
             <td>
               {% if current_user.has_role('Admin') %}
-              <a href="{{ url_for('views.delete_note', note_id=row.id) }}">Delete</a>
+              <form method="POST" action="{{ url_for('views.delete_note', note_id=row.id) }}" style="display:inline;" onsubmit="return confirmDelete();">
+                <button type="submit">Delete</button>
+              </form>
               {%endif%}
             </td>
         </tr>
     {%-endfor-%}
     </table>
+    <script>
+      function confirmDelete() {
+          return confirm("Are you sure you want to delete this note?");
+      }
+      </script>
     <hr/>
     <form method="post">
         <title>Add Note</title>
-        <label for="eventBox">Note Information</label>
+        <label for="eventBox">New Note</label>
         <input name="eventBox" id="eventBox" required/>
         <input type="submit" value = "Add">
     </form>

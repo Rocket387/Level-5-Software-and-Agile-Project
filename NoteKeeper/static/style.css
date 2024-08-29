@@ -1,0 +1,16 @@
+
+body {
+    background: lightgray;
+}
+
+button {
+    background-color: lightgoldenrodyellow;
+    color: gray;
+    border-color: darkgoldenrod;
+}
+
+.btn {
+    background-color: lightgoldenrodyellow;
+    color: gray;
+    border-color: darkgoldenrod;
+}

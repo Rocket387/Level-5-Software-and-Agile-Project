@@ -10,8 +10,6 @@ from datetime import datetime, timedelta #imports datetime for database entries
 
 ##### this file sets up the app #####
 
-
-
 DB_NAME = 'PVWebAPPDB.db' #variable to name the database for web app
 
 # function to create the web app, initializes database, create roles, admin and add notes
