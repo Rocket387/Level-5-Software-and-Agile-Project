@@ -2,6 +2,7 @@ from .extensions import db
 from flask_login import UserMixin # class provides methods for flask_login such as is_authenticated 
 #for example checking user is logged in before moving to home page)
 from sqlalchemy.sql import func
+from datetime import datetime
 
 #### Object Relational Mapping for database ####
 
@@ -11,7 +12,7 @@ from sqlalchemy.sql import func
 class Note(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     info = db.Column(db.String(10000))
-    date = db.Column(db.Date, default=func.current_date())
+    date = db.Column(db.DateTime, default=datetime.utcnow)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     role_id = db.Column(db.Integer, db.ForeignKey('role.id'))
 

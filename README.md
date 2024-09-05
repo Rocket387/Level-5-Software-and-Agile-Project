@@ -7,6 +7,8 @@ About/How to use:
 - There are 2 types of users for this web app, Admin and User.
 Admin will be able to create, read, update and delete notes, Users will be able to create, read and update their notes.
 
+Testing
+- To run tests in test_app.py open terminal and run pytest
 
 Future uses:
 - This web app will be further built on to include information on when team members are on A/L and which team member is Oncall

@@ -3,6 +3,8 @@ from NoteKeeper import create_app, db
 from NoteKeeper.models import User, Note, Role
 from NoteKeeper.config import TestingConfig
 from werkzeug.security import generate_password_hash, check_password_hash
+from datetime import datetime, timedelta #imports datetime for database entries
+
 
 #### unit tests for webapp ####
 
@@ -85,7 +87,7 @@ class TestApp(unittest.TestCase):
             response = self.client.get('/logout', follow_redirects=True)
             self.assertIn(b'Logged out successfully', response.data)
 
-###
+### failing tests ###
     @unittest.expectedFailure
     def test_note_delete(self):
        with self.client as client:
@@ -116,17 +118,35 @@ class TestApp(unittest.TestCase):
        with self.client as client:
             response = self.client.post('/login', data=dict(email='user@test.com', password='userpass'), follow_redirects=True) 
 
-         # Create a note to be eidted
-            note = Note(info='Test Note for Editing', user_id=self.admin_user.id)
+        # Create a note to be edited
+            note = Note(info='Test Note for Editing',
+            date=datetime.utcnow(),
+            user_id=1)
             db.session.add(note)
             db.session.commit()
-            response = self.client.post('/edit-note/<int:note_id>')
+            response = self.client.post('/edit-note/{note_user.1}')
             self.assertIn(b'Note successfully updated!', response.data)
 
     @unittest.expectedFailure
     def test_user_cannot_edit_note(self):
        with self.client as client:
             response = self.client.post('/login', data=dict(email='user@test.com', password='userpass'), follow_redirects=True)
-            response = self.client.post('/edit-note/<int:note_id>')
+            # Create a note to be edited
+            response = self.client.post('/', data=dict(eventBox='Test Note for editing'), follow_redirects=True)
+            self.assertIn(b'Test Note', response.data) 
+
+            response = self.client.post('/', '/edit-note/2', data=dict(eventBox='Edited'), follow_redirects=True)
+        
             self.assertIn(b'You do not have permission to edit this note!', response.data)
+
+    @unittest.expectedFailure
+    def test_user_has_added_more_than_1_character_edit_note(self):
+       with self.client as client:
+            response = self.client.post('/login', data=dict(email='user@test.com', password='userpass'), follow_redirects=True)
+            # Create a note to be edited
+            response = self.client.post('/', data=dict(eventBox='Test Note for editing', user_id = 3), follow_redirects=True)
+            
+
+            response = self.client.post('/', '/edit-note/{int:3}')
+            self.assertIn(b'Note is too short', response.data)
     

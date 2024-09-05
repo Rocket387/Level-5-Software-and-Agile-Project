@@ -35,7 +35,7 @@ def home():
         return redirect(url_for('views.home'))
 
     #queries all notes and orders them by date for the homepage
-    events_list = db.session.query(Note).join(User).order_by(Note.date).all()
+    events_list = db.session.query(Note).join(User).order_by(Note.date.desc()).all()
    
    #redirect to prevent resubmission issues
     return render_template('home.html', user=current_user, eventsList=events_list)
@@ -67,7 +67,7 @@ def edit_note(note_id):
     return redirect(url_for('views.home'))
 
 #function for Admin users to delete notes
-@views.route('/delete-note/<int:note_id>')
+@views.route('/delete-note/<int:note_id>', methods=['POST'])
 @login_required
 def delete_note(note_id):
     note = Note.query.get_or_404(note_id)
