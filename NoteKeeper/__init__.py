@@ -76,11 +76,11 @@ def create_admin_user():
     admin_role = Role.query.filter_by(roleName='Admin').first()
 
     #checks admin user exists
-    if not User.query.filter_by(email='admin@example.com').first():
+    if not User.query.filter_by(email='admin@pvteam.com').first():
         admin_user = User(
-            email='admin@example.com',
+            email='admin@pvteam.com',
             alias='Admin',
-            password=generate_password_hash('adminpass', method='pbkdf2:sha256'), #adding a salt and hashing password with shah256
+            password=generate_password_hash('seA8Yellow!', method='pbkdf2:sha256'), #adding a salt and hashing password with shah256
             role=admin_role
         )
         db.session.add(admin_user)

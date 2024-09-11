@@ -6,8 +6,15 @@
 <h1 align="center">Welcome to PV Stand Up Note Keeper</h1>
 <h5 align="center">Please enter and/or edit your daily Standup notes below</h5>
 <ul class="list-group list-group-flush" id="notes">
-  
+  <br>
   <body>
+    <form method="post">
+      <title>Add Note</title>
+      <label for="eventBox">New Note</label>
+      <input name="eventBox" placeholder="Add note here" id="eventBox" required/>
+      <input type="submit" value = "Add">
+  </form>
+  <br>
     <table>
         <tr>
             <th>Alias</th>
@@ -44,11 +51,6 @@
     {%-endfor-%}
     </table>
     <hr/>
-    <form method="post">
-        <title>Add Note</title>
-        <label for="eventBox">New Note</label>
-        <input name="eventBox" placeholder="Add note here" id="eventBox" required/>
-        <input type="submit" value = "Add">
-    </form>
+    
 </body>
 {%endblock%} 

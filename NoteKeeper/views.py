@@ -1,8 +1,7 @@
-from flask import Blueprint, render_template, request, flash, jsonify, redirect,url_for
+from flask import Blueprint, render_template, request, flash, redirect,url_for
 from flask_login import login_required, current_user, login_user, logout_user
 from .models import Note, User
 from . import db
-import json
 from datetime import datetime
 
 
@@ -41,7 +40,7 @@ def home():
     return render_template('home.html', user=current_user, eventsList=events_list)
 
 #function permits users to edit their notes, base path and variable for note_id to identify which note to edit
-@views.route('/edit-note/<int:note_id>', methods=['POST'])
+@views.route('/edit-note/<int:note_id>', methods=['POST', 'GET'])
 @login_required
 def edit_note(note_id):
     note = Note.query.get_or_404(note_id)
