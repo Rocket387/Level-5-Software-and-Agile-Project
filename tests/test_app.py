@@ -65,7 +65,7 @@ class TestApp(unittest.TestCase):
 
     def test_note_creation(self):
         #Test if admin can create a note
-        self.client.post('/login', data=dict(email='admin@example.com', password='adminpass'), follow_redirects=True)
+        self.client.post('/login', data=dict(email='admin@test.com', password='adminpass'), follow_redirects=True)
         response = self.client.post('/', data=dict(eventBox='Test Note'), follow_redirects=True)
         self.assertIn(b'Test Note', response.data)
 
@@ -93,13 +93,18 @@ class TestApp(unittest.TestCase):
        with self.client as client:
             response = self.client.post('/login', data=dict(email='admin@test.com', password='adminpass'), follow_redirects=True)
             # Create a note to be deleted
-            note = Note(info='Test Note for Deletion', role=self.admin_role.id)
+            note = Note(info='Test Note for Deletion', user_id=1, role=self.admin_role)
             db.session.add(note)
             db.session.commit()
 
             response = self.client.delete(f'/delete-note/{note.id}', follow_redirects=True)
             self.assertIn(b'Note deleted successfully.', response.data)
-            
+          
+        
+            deleted_note = Note.query.get(note.id)
+            self.assertIsNone(deleted_note)
+
+
     @unittest.expectedFailure
     def test_user_cannot_delete_note(self):
         with self.client as client:
