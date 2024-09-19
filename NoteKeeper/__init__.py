@@ -10,14 +10,15 @@ from datetime import datetime, timedelta #imports datetime for database entries
 
 ##### this file sets up the app #####
 
-DB_NAME = 'PVWebAPPDB.db' #variable to name the database for web app
-
 # function to create the web app, initializes database, create roles, admin and add notes
 def create_app(config_class=Config):
     app = Flask(__name__)
     app.config.from_object(config_class)
 
     db.init_app(app) #initializes app for use with database
+
+    # Ensure the data directories exist
+    Config.ensure_directories()
 
     # Defines routes for web app
     from .views import views
@@ -26,8 +27,6 @@ def create_app(config_class=Config):
     #importing and registering the blueprint from the factory in views.py and auth.py
     app.register_blueprint(views, url_prefix='/')
     app.register_blueprint(auth, url_prefix='/')
-    
-    from .models import User, Note
 
     #setting up database and initializing it with the function calls
     with app.app_context():
@@ -49,11 +48,11 @@ def create_app(config_class=Config):
 
 #function to create app database if it does not already exist
 def create_database(app):
-    if not path.exists('app/' + DB_NAME):
+    if not path.exists(app.config['SQLALCHEMY_DATABASE_URI'].replace('sqlite:///', '')):
         db.create_all()
         print('Created Database')
     else:
-        print('Database already exits')
+        print('Database already exists')
 
 #function to create 2 roles, Admin or User
 def create_roles():

@@ -1,18 +1,23 @@
 # config.py
 import os
 
-#config file to setup database for webapp in production, development and Test
+# Set data directory based on environment variable, defaulting to ~/data if not set
+DATA_DIR = os.getenv('DATA_DIR', os.path.join(os.path.expanduser('~'), 'data'))
+
 class Config:
     SECRET_KEY = 'ENTER-KEY'
-    SQLALCHEMY_DATABASE_URI = 'sqlite:///PVWebAppDB.db'
+    
+    # Use os.path.join to ensure correct paths for different environments
+    SQLALCHEMY_DATABASE_URI = f'sqlite:///{os.path.join(DATA_DIR, "PVWebAppDB.db")}'
+    
     SQLALCHEMY_TRACK_MODIFICATIONS = False  # Disable tracking to save resources
-    DEBUG = False  #Disable debugging by default
-    TESTING = False  #Disable testing by default
+    DEBUG = False
+    TESTING = False
 
-
-class DevelopmentConfig(Config):
-    DEBUG = True  #Enable debugging for development
-
+    # Ensure the data directory exists
+    @staticmethod
+    def ensure_directories():
+        os.makedirs(DATA_DIR, exist_ok=True)
 
 class TestingConfig(Config):
     TESTING = True  #Enable testing mode
