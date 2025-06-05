@@ -1,0 +1,28 @@
+name: CI - Build, Lint, and Test
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v3
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v2
+
+    - name: Run Python Lint (flake8)
+      run: docker-compose run --rm notekeeper flake8 .
+
+    - name: Run Backend Tests (pytest)
+      run: docker-compose run --rm notekeeper pytest
+
+    - name: Run Frontend Lint (eslint)
+      run: docker-compose run --rm frontend npm run lint
+
+    - name: Run Frontend Tests (Jest)
+      run: docker-compose run --rm frontend npm test -- --watchAll=false

@@ -34,6 +34,8 @@ class User(db.Model, UserMixin):
     role = db.relationship('Role', back_populates='users')
     notes = db.relationship('Note', back_populates='user', cascade="all, delete-orphan") #if user is deleted all related notes are deleted, and vice versa
 
+    chatbot_interactions = db.relationship('ChatbotInteraction', back_populates='user', cascade="all, delete-orphan")
+
     #function to check what trole the user has as this will determine whether they can delete notes or not (only if admin)
     def has_role(self, role_name):
         return self.role and self.role.roleName == role_name
@@ -47,3 +49,12 @@ class Role(db.Model):
     
     users = db.relationship('User', back_populates='role')
     notes = db.relationship('Note', back_populates='role')
+
+class ChatbotInteraction(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    message = db.Column(db.String(1000), nullable=False)
+    response = db.Column(db.String(1000), nullable=False)
+    timestamp = db.Column(db.DateTime, default=datetime.utcnow)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=True)  # nullable for anonymous interactions
+
+    user = db.relationship('User', back_populates='chatbot_interactions')

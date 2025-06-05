@@ -1,93 +1,80 @@
-from flask import Blueprint, render_template, request, flash, redirect,url_for
-from flask_login import login_required, current_user, login_user, logout_user
-from .models import Note, User
-from . import db
+from flask import Blueprint, request, jsonify
+from flask_login import login_required, current_user
+from notekeeper.models import Note, User
+from notekeeper.extensions import db
 from datetime import datetime
 
+views = Blueprint('views', __name__)
 
-#### routes/pages for web app ####
-
-#blueprint organizes related views and code
-views = Blueprint('views',__name__)
-
-#home page fetches, adds and edits data from the database
-@views.route('/', methods=['GET', 'POST'])
-#login is required for user to access this page
+# GET all notes
+@views.route('/api/notes', methods=['GET'])
 @login_required
-def home():
-    if request.method == 'POST':
-        note_content = request.form.get('eventBox')  #note input field
-        
-        #validation rule ensures note is not just one letter
-        if len(note_content) < 1:
-            flash('Note is too short', category='error')
-        else:
-            #new Note created with the current date and the note content
-            new_note = Note(info=note_content, date=datetime.now(), user_id=current_user.id)
-            
-            #adds new note to the database
-            db.session.add(new_note)
-            db.session.commit()
-            flash('Note added', category='success')
-        
-        #redirect to prevent resubmission issues
-        return redirect(url_for('views.home'))
+def get_notes():
+    notes = Note.query.join(User).add_columns(
+        Note.id, Note.info, Note.date, User.alias.label('userAlias')
+    ).order_by(Note.date.desc()).all()
 
-    #queries all notes and orders them by date for the homepage
-    events_list = db.session.query(Note).join(User).order_by(Note.date.desc()).all()
-   
-   #redirect to prevent resubmission issues
-    return render_template('home.html', user=current_user, eventsList=events_list)
+    notes_list = []
+    for note in notes:
+        notes_list.append({
+            'id': note.id,
+            'info': note.info,
+            'date': note.date.strftime('%d-%M-%Y'),
+            'userAlias': note.userAlias
+        })
 
-#function permits users to edit their notes, base path and variable for note_id to identify which note to edit
-@views.route('/edit-note/<int:note_id>', methods=['POST', 'GET'])
+    return jsonify({'notes': notes_list}), 200
+
+# POST a new note
+@views.route('/api/notes', methods=['POST'])
 @login_required
-def edit_note(note_id):
+def create_note():
+    data = request.get_json()
+    description = data.get('description')
+    date_str = data.get('date')
+    
+    if not description or len(description) < 1:
+        return jsonify({'error': 'Note is too short'}), 400
+
+    try:
+        date = datetime.fromisoformat(date_str.rstrip('Z')) if date_str else datetime.utcnow()
+    except Exception:
+        date = datetime.utcnow()
+        
+    new_note = Note(info=description, date=date, user_id=current_user.id, role_id=current_user.role_id)
+    db.session.add(new_note)
+    db.session.commit()
+    return jsonify({'message': 'Note added successfully'}), 201
+
+# PUT (edit) an existing note
+@views.route('/api/notes/<int:note_id>', methods=['PUT'])
+@login_required
+def update_note(note_id):
     note = Note.query.get_or_404(note_id)
 
-    #checks current user owns the note otherwise they cannot edit it
-    if note.user_id != current_user.id:
-        flash('You do not have permission to edit this note!', category='error')
-        #redirect to prevent resubmission issues
-        return redirect(url_for('views.home'))
-    
-    #if user owns the note checks and edited information contains at least one letter note will be updated
-    updated_info = request.form.get('updated_info')
-    if updated_info and len(updated_info) > 0:
-        note.info = updated_info
-        note.date = datetime.now()
-        db.session.commit()
-        flash('Note successfully updated!', category='success')
-    else:
-        #lets the user know edits must be at least 1 character change
-        flash('Note content cannot be empty', category='error')
-    
-    #redirect to prevent resubmission issues
-    return redirect(url_for('views.home'))
+    # Only owner or admin can edit
+    if note.user_id != current_user.id and current_user.role.roleName != 'Admin':
+        return jsonify({'error': 'You do not have permission to edit this note.'}), 403
 
-#function for Admin users to delete notes
-@views.route('/delete-note/<int:note_id>', methods=['POST'])
+    data = request.get_json()
+    new_info = data.get('description')
+    if not new_info or len(new_info) < 1:
+        return jsonify({'error': 'Note content cannot be empty'}), 400
+
+    note.info = new_info
+    note.date = datetime.utcnow()
+    db.session.commit()
+    return jsonify({'message': 'Note updated successfully'}), 200
+
+# DELETE a note (Admin or owner only)
+@views.route('/api/notes/<int:note_id>', methods=['DELETE'])
 @login_required
 def delete_note(note_id):
     note = Note.query.get_or_404(note_id)
-    #checks users roleName is equivalent to Admin
-    if current_user.role.roleName != 'Admin':
-        flash('You do not have permission to delete this note.', category='error')
-        return redirect(url_for('views.home'))
+    
+    if current_user.role.roleName != 'Admin' and note.user_id != current_user.id:
+        return jsonify({'error': 'You do not have permission to delete this note.'}), 403
 
-    #if Admin user note is deleted when delete button is clicked
     db.session.delete(note)
     db.session.commit()
-    flash('Note deleted successfully.', category='success')
-
-    #redirect to prevent resubmission issues
-    return redirect(url_for('views.home'))
-
-#logout route
-@views.route('/logout')
-def logout():
-    #Logs user out, user is shown successful logout comment and shown login page
-    if login_user(current_user):
-        logout_user()
-        flash('Logged out successfully', category='success')
-    return redirect(url_for('auth.login'))
+    return jsonify({'message': 'Note deleted successfully'}), 200

@@ -1,0 +1,17 @@
+name: DAST Scan with OWASP ZAP
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  zap_scan:
+    name: OWASP ZAP Baseline Scan
+    runs-on: ubuntu-latest
+    steps:
+      - name: Start OWASP ZAP Scan
+        uses: zaproxy/action-baseline@v0.10.0
+        with:
+          target: 'https://level-5-software-and-agile-project.onrender.com'
+          fail_action: true

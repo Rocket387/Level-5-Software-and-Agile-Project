@@ -7,12 +7,29 @@ from werkzeug.security import generate_password_hash #secure checks for password
 from .models import User, Role, Note #importing classes in models.py
 from .config import Config #importing Config class in config.py
 from datetime import datetime, timedelta #imports datetime for database entries
-
-##### this file sets up the app #####
+from .chatbot import chatbot #importing chatbot.py to load intents and model
 
 # function to create the web app, initializes database, create roles, admin and add notes
 def create_app(config_class=Config):
     app = Flask(__name__)
+    app.config.from_object(config_class)
+
+    # Enable CORS
+    from flask_cors import CORS
+    CORS(app,
+     resources={r"/*": {"origins": "*"}},
+     supports_credentials=True,
+     methods=["GET", "HEAD", "POST", "OPTIONS", "PUT", "PATCH", "DELETE"],
+     allow_headers=["Content-Type", "Authorization", "X-Requested-With"])
+    
+     # --- OWASP security headers ---
+    from talisman import Talisman
+    Talisman(app, force_https=False) 
+
+    # --- Session protection ---
+    app.config['SESSION_COOKIE_HTTPONLY'] = True
+    app.config['SESSION_COOKIE_SECURE'] = True
+    app.config['REMEMBER_COOKIE_HTTPONLY'] = True
     app.config.from_object(config_class)
 
     db.init_app(app) #initializes app for use with database
@@ -23,10 +40,12 @@ def create_app(config_class=Config):
     # Defines routes for web app
     from .views import views
     from .auth import auth
+    from .chatbot import chatbot
 
     #importing and registering the blueprint from the factory in views.py and auth.py
     app.register_blueprint(views, url_prefix='/')
     app.register_blueprint(auth, url_prefix='/')
+    app.register_blueprint(chatbot, url_prefix='/api') #registers chatbot blueprint
 
     #setting up database and initializing it with the function calls
     with app.app_context():

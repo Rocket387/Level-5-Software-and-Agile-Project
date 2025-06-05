@@ -1,0 +1,226 @@
+{
+    "intents": [
+        {
+            "tag": "playback_issues",
+            "patterns": [
+                "Customer video not loading",
+                "Customer playback error",
+                "Customer buffering issues",
+                "Customer can't watch movie",
+                "Customer video won't start"
+            ],
+            "responses": [
+                "It sounds like they are having playback issues. Could you specify the device and marketplace of the customer",
+                ""
+            ],
+            "next_state": "playback_followup"
+        },
+        {
+            "tag": "playback_followup",
+            "patterns": [
+                "device is a smart TV",
+                "device is a phone",
+                "device is a tablet",
+                "device is a laptop",
+                "marketplace is US",
+                "marketplace is UK",
+                "marketplace is CA"
+            ],
+            "responses": [
+                "Thanks for the details! Please provide the CustomerID so I can query the database for any coresponding logs",
+                "Got it! Now, please provide the CustomerID so I can look up the logs for this issue."
+
+            ],
+            "next_state": "playback_database_query"
+        },
+        {
+            "tag": "playback_database_query",
+            "patterns": [
+                "CustomerID is 12345",
+                "CustomerID is 67890"
+            ],
+            "responses": [
+                "I have found the logs for the CustomerID you provided. The issue seems to be related to a network error. Please advise the customer to check their internet connection.",
+                "There are no logs found for the CustomerID you provided. I have found a similar issue reported by other customers. It seems to be a widespread problem. Please advise the customer to try again later.",
+                "Invalid customer ID. Please provide a valid CustomerID to proceed.",
+                "This customer currently has payment issues. Please advise the customer to update their payment information.",
+                "This customer has an active subscription. Please advise the customer to check their account settings.",
+                "There is currently a known issue with playback on smart TVs. Please advise the customer to try again later or use a different device.",
+                "There is currently a known issue with playback on phones. Please advise the customer to try again later or use a different device.",
+                "There is currently a known issue with playback on tablets. Please advise the customer to try again later or use a different device.",
+                "There is currently a known issue with playback on laptops. Please advise the customer to try again later or use a different device."
+            ],
+             "next_state": "playback_next_steps"
+        },
+        {
+            "tag": "playback_next_steps",
+            "patterns": [
+                "What should I do next?",
+                "How can I help the customer?",
+                "What are the next steps?",
+                "How has this issue been resolved in the past?",
+                "What are the common solutions for this issue?"
+            ],
+            "responses": [
+                "You can advise the customer to check their internet connection, try a different device, or contact our support team for further assistance.",
+                "Would you like to escalate this issue to our support team for further assistance?",
+                "Would you like to see similar issues reported by other customers?",
+                "Would you like to see the latest updates on this issue?",
+                "Let me look for how this issue has been resolved in the past, so I can provide you with some common solutions."
+
+            ]
+        },
+        {
+      "tag": "account_management",
+      "patterns": [
+        "customer wants to change password",
+        "customer wants to update email",
+        "customer has billing issues",
+        "customer account locked out",
+        "customer can't access account"
+      ],
+      "responses": [
+        "It seems like they are having account management issues. Could you specify what they are trying to do?"
+      ],
+      "next_state": "account_followup"
+    },
+    {
+      "tag": "account_followup",
+      "patterns": [
+        "forgot password",
+        "change email",
+        "update payment info",
+        "can't login",
+        "account locked"
+      ],
+      "responses": [
+        "Got it! Here are some helpful links: \n- Reset password: https://help.streamingcompany.com/account/reset-password \n- Update email: https://help.streamingcompany.com/account/update-email \n- Update payment: https://help.streamingcompany.com/account/update-payment"
+      ]
+    },
+
+    {
+      "tag": "content_library",
+      "patterns": [
+        "add new shows",
+        "missing episodes",
+        "no subtitles",
+        "wrong language",
+        "content not available"
+      ],
+      "responses": [
+        "Got it! Could you specify the title or show you’re asking about?"
+      ],
+      "next_state": "content_library_followup"
+    },
+    {
+      "tag": "content_library_followup",
+      "patterns": [
+        "show is missing",
+        "missing episode",
+        "no subtitles available"
+      ],
+      "responses": [
+        "Thanks for letting us know! Here's a link to check current availability and subtitle options: https://help.streamingcompany.com/content-library"
+      ]
+    },
+
+    {
+      "tag": "general_team_info",
+      "patterns": [
+        "who are we",
+        "about the team",
+        "what is the company",
+        "team info",
+        "who works here"
+      ],
+      "responses": [
+        "We’re the Streaming Support Team—here to help with streaming issues, account support, and more! Would you like to read more about us here? https://www.streamingcompany.com/about"
+      ],
+      "next_state": "general_team_followup"
+    },
+    {
+      "tag": "general_team_followup",
+      "patterns": [
+        "yes",
+        "more info"
+      ],
+      "responses": [
+        "Here's our team page with more info: https://www.streamingcompany.com/about"
+      ]
+    },
+
+    {
+      "tag": "organization_info",
+      "patterns": [
+        "company mission",
+        "company vision",
+        "about the organization",
+        "our goals",
+        "what does the company do"
+      ],
+      "responses": [
+        "Our mission is to deliver high-quality streaming experiences with a vast library of movies and shows for everyone to enjoy. Learn more: https://www.streamingcompany.com/mission"
+      ],
+      "next_state": "organization_followup"
+    },
+    {
+      "tag": "organization_followup",
+      "patterns": [
+        "more info",
+        "yes"
+      ],
+      "responses": [
+        "Here’s our detailed mission and vision page: https://www.streamingcompany.com/mission"
+      ]
+    },
+
+    {
+      "tag": "team_responsibilities",
+      "patterns": [
+        "who handles playback issues",
+        "who manages accounts",
+        "who handles device issues",
+        "who updates the library"
+      ],
+      "responses": [
+        "Our team covers Playback Support, Account Management, Content Library, and Device Compatibility. Here’s an overview: https://help.streamingcompany.com/our-team"
+      ],
+      "next_state": "team_responsibilities_followup"
+    },
+    {
+      "tag": "team_responsibilities_followup",
+      "patterns": [
+        "more info",
+        "yes"
+      ],
+      "responses": [
+        "You can find the detailed breakdown of responsibilities here: https://help.streamingcompany.com/our-team"
+      ]
+    },
+
+    {
+      "tag": "escalation_support",
+      "patterns": [
+        "need more help",
+        "still having problems",
+        "talk to a human",
+        "escalate issue"
+      ],
+      "responses": [
+        "Our support team can step in! Please share your email and a brief description, and someone will reach out shortly."
+      ],
+      "requires_user_details": true,
+      "next_state": "escalation_followup"
+    },
+    {
+      "tag": "escalation_followup",
+      "patterns": [
+        "yes",
+        "okay"
+      ],
+      "responses": [
+        "Thank you! Please share your contact details here: https://www.streamingcompany.com/contact-support"
+      ]
+    }
+  ]
+}
