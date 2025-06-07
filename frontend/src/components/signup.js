@@ -15,14 +15,26 @@ const Signup = ({ onSignup }) => {
   const [success, setSuccess] = useState('');
 
   const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prevData) => ({ ...prevData, [name]: value }));
-  };
+  const { name, value } = e.target;
+
+ 
+  if (name === 'email' || name === 'alias') {
+    const invalidPattern = /[<>/"'`;[\]]/;
+    if (invalidPattern.test(value)) {
+      setError('Invalid characters detected in email. Please remove any of the following: <, >, /, ", \', `, ;, [, ]');
+    } else {
+      setError(''); 
+    }
+  }
+
+  setFormData((prevData) => ({ ...prevData, [name]: value }));
+};
 
   const handleSignup = async (e) => {
   e.preventDefault();
   setError('');
   setSuccess('');
+
 
   try {
     const response = await api.post('/api/auth/signup', formData);

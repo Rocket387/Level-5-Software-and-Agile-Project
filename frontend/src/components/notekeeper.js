@@ -77,45 +77,48 @@ const NoteKeeper = ({ currentUser, currentUserRole }) => {
       <h3>Notes</h3>
       {message && <p style={{ color: 'green' }}>{message}</p>}
       <Table striped bordered hover style={{ marginTop: '10px' }}>
-        <thead>
-          <tr>
-            <th>Alias</th>
-            <th>Date</th>
-            <th>Note</th>
-            <th>Edit</th>
-            {currentUserRole === 'Admin' && <th>Delete</th>}
-          </tr>
-        </thead>
-        <tbody>
-          {notes.map((note) => (
-            <tr key={note.id}>
-              <td>{note.userAlias}</td>
-              <td>{note.date}</td>
-              <td>{note.info}</td>
-              <td>
-                {(note.userAlias === currentUser || currentUserRole === 'Admin') && (
-                  <Button variant="primary" size="sm" onClick={() => handleEdit(note)}>
-                    Edit
-                  </Button>
-                )}
-              </td>
-              {currentUserRole === 'Admin' || note.userAlias === currentUser ? (
-                <td>
-                  <Button
-                    variant="danger"
-                    size="sm"
-                    onClick={() => handleDelete(note.id)}
-                  >
-                    Delete
-                  </Button>
-                </td>
-              ) : (
-                currentUserRole === 'Admin' && <td />
-              )}
-            </tr>
-          ))}
-        </tbody>
-      </Table>
+  <thead>
+    <tr>
+      <th>Alias</th>
+      <th>Date</th>
+      <th>Note</th>
+      <th></th>
+      <th></th> 
+    </tr>
+  </thead>
+  <tbody>
+    {notes.map((note) => {
+      const isNoteOwner = note.userAlias === currentUser;
+      const isAdmin = currentUserRole === 'Admin';
+      return (
+        <tr key={note.id}>
+          <td>{note.userAlias}</td>
+          <td>{note.date}</td>
+          <td>{note.info}</td>
+          <td>
+            {(isNoteOwner || isAdmin) && (
+              <Button variant="primary" size="sm" onClick={() => handleEdit(note)}>
+                Edit
+              </Button>
+            )}
+          </td>
+          <td>
+            {(isNoteOwner || isAdmin) && (
+              <Button
+                variant="danger"
+                size="sm"
+                onClick={() => handleDelete(note.id)}
+              >
+                Delete
+              </Button>
+            )}
+          </td>
+        </tr>
+      );
+    })}
+  </tbody>
+</Table>
+
 
       <Form onSubmit={handleSubmit} style={{ maxWidth: '400px', margin: 'auto' }}>
       

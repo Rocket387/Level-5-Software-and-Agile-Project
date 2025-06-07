@@ -97,6 +97,13 @@ def get_response(user_id, user_input):
                 response = random.choice(intent['responses'])
                 log_chatbot_interaction(user_input, response)
                 return response
+            
+    for intent in intents['intents']:
+        for pattern in intent.get('patterns', []):
+            if pattern in user_input_cleaned:
+                response = random.choice(intent['responses'])
+                log_chatbot_interaction(user_input, response)
+                return response
 
     response = "I'm sorry, I don't understand."
     log_chatbot_interaction(user_input, response)

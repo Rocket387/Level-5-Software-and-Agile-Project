@@ -22,7 +22,7 @@ const NavbarComponent = () => {
       <Navbar.Toggle aria-controls="basic-navbar-nav" />
       <Navbar.Collapse id="basic-navbar-nav">
         <Nav className="mr-auto">
-          <Nav.Link className="custom-nav-link" onClick={handleLogout}>Logout</Nav.Link>
+          <Nav.Link className="custom-nav-link" onClick={() => handleLogout(navigate)}>Logout</Nav.Link>
         </Nav>
       </Navbar.Collapse>
     </Navbar>

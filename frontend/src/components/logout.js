@@ -1,18 +1,17 @@
-// logout.js
 import axios from 'axios';
 import { logout } from '../api';  
 
-const handleLogout = async () => {
+const handleLogout = async (navigate) => {  
   try {
-    
     const confirmLogout = window.confirm('Are you sure you want to log out?');
     if (!confirmLogout) {
-      return; // User canceled logout
+      console.log('Logout cancelled by user.');
+      return;
     }
     const response = await logout();
     if (response.status === 200) {
-      // Redirect to login page
-      window.location.href = '/login';
+      console.log('Logout successful, navigating to login...');
+      navigate('/login'); 
     } else {
       console.error('Unexpected logout response:', response);
     }

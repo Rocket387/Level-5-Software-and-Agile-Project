@@ -23,5 +23,6 @@ flake8
 talisman==0.1.0  # For security
 bs4==0.0.1  # For web scraping
 requests==2.28.1  # For making HTTP requests
-beautifulsoup4==4.11.1  # For parsing HTML and XML documents
+beautifulsoup4==4.11.1  # For parsing HTML and XML document
+
 

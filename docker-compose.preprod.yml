@@ -17,10 +17,11 @@ services:
       dockerfile: notekeeper/Dockerfile
     ports:
       - "8080:8080"
-    networks:
-      - app-network
     environment:
       - FLASK_ENV=production
+    networks:
+      - app-network
+
 networks:
   app-network:
     driver: bridge

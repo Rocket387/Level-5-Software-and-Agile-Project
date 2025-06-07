@@ -10,9 +10,20 @@ const Login = ({ onLogin }) => {
   const [success, setSuccess] = useState('');
 
   const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prevData) => ({ ...prevData, [name]: value }));
-  };
+  const { name, value } = e.target;
+
+ 
+  if (name === 'email') {
+    const invalidPattern = /[<>/"'`;[\]]/;
+    if (invalidPattern.test(value)) {
+      setError('Invalid characters detected in email. Please remove any of the following: <, >, /, ", \', `, ;, [, ]');
+    } else {
+      setError(''); 
+    }
+  }
+
+  setFormData((prevData) => ({ ...prevData, [name]: value }));
+};
 
   const handleLogin = async (e) => {
   e.preventDefault();

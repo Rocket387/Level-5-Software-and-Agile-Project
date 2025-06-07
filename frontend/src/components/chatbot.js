@@ -22,12 +22,22 @@ function ChatBot() {
     }
   };
 
+  const handleToggle = () => {
+    setOpen(!open);
+    if (!open) {
+      // Add a greeting message when the chatbot is opened
+      setMessages([
+        { from: 'bot', text: "Hello, I'm Suru, your PV team chatbot! Please enter your question or web link and I will do my best to assist you..." }
+      ]);
+    }
+  };
+
   return (
     <>
       {/* Chatbot Toggle Button */}
       <button
         className="chatbot-toggle"
-        onClick={() => setOpen(!open)}
+        onClick={handleToggle}
       >
         💬
       </button>

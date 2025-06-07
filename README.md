@@ -18,6 +18,12 @@ Future uses:
 * If running locally please run install -r requirements.txt in terminal to ensure all libraries are added
 
 
+To start the application in the development environment
+docker-compose -f docker-compose.dev.yml build
+docker-compose -f docker-compose.dev.yml up 
+
+
+
 
 
 

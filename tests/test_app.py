@@ -1,7 +1,7 @@
 import unittest
-from NoteKeeper import create_app, db
-from NoteKeeper.models import User, Note, Role
-from NoteKeeper.config import TestingConfig
+from notekeeper import create_app, db
+from notekeeper.models import User, Note, Role
+from notekeeper.config import TestingConfig
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime, timedelta #imports datetime for database entries
 

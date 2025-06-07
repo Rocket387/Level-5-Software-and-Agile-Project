@@ -24,7 +24,27 @@ def create_app(config_class=Config):
     
      # --- OWASP security headers ---
     from talisman import Talisman
-    Talisman(app, force_https=False) 
+    
+    csp = {
+    'default-src': [
+        '\'self\'',
+        'https://trusted.cdn.com',
+        'https://fonts.googleapis.com'
+    ],
+    'script-src': [
+        '\'self\'',
+        'https://trusted.cdn.com'
+    ],
+    'style-src': [
+        '\'self\'',
+        'https://fonts.googleapis.com'
+    ],
+    'img-src': [
+        '\'self\'',
+        'data:'
+    ]
+    }
+    Talisman(app, content_security_policy=csp, force_https=False)
 
     # --- Session protection ---
     app.config['SESSION_COOKIE_HTTPONLY'] = True
