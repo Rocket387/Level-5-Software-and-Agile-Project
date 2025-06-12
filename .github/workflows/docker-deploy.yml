@@ -16,22 +16,17 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Install Docker Compose
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y docker-compose
-
       - name: Run Backend Lint (flake8)
-        run: docker-compose -f docker-compose.dev.yml run --rm backend flake8 .
+        run: docker compose -f docker-compose.dev.yml run --rm backend flake8 .
 
       - name: Run Backend Tests (pytest)
-        run: docker-compose -f docker-compose.dev.yml run --rm backend pytest
+        run: docker compose -f docker-compose.dev.yml run --rm backend pytest
 
       - name: Run Frontend Lint (eslint)
-        run: docker-compose -f docker-compose.dev.yml run --rm frontend npm run lint
+        run: docker compose -f docker-compose.dev.yml run --rm frontend npm run lint
 
       - name: Run Frontend Tests (Jest)
-        run: docker-compose -f docker-compose.dev.yml run --rm frontend npm test -- --watchAll=false
+        run: docker compose -f docker-compose.dev.yml run --rm frontend npm test -- --watchAll=false
 
   build-and-push:
     runs-on: ubuntu-latest
@@ -51,11 +46,6 @@ jobs:
         with:
           username: ${{ env.DOCKERHUB_USERNAME }}
           password: ${{ env.DOCKERHUB_PASSWORD }}
-      
-      - name: Install Docker Compose
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y docker-compose
 
       - name: Build and push backend image
         run: |
@@ -73,20 +63,12 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
-      
-      - name: Install Docker Compose
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y docker-compose
-
-      - name: Set up Docker Compose
-        run: sudo apt-get update && sudo apt-get install -y docker-compose
 
       - name: Deploy to Dev Environment
-        run: docker-compose -f docker-compose.dev.yml up -d --build
+        run: docker compose -f docker-compose.dev.yml up -d --build
 
       - name: Deploy to Preprod Environment
-        run: docker-compose -f docker-compose.preprod.yml up -d --build
+        run: docker compose -f docker-compose.preprod.yml up -d --build
 
       - name: Deploy to Prod Environment
-        run: docker-compose -f docker-compose.prod.yml up -d --build
+        run: docker compose -f docker-compose.prod.yml up -d --build

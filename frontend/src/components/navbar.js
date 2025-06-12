@@ -20,7 +20,7 @@ const NavbarComponent = ({ onLogout }) => {
         <Nav className="mr-auto">
           <Nav.Link className="custom-nav-link" onClick={onClickLogout}>Logout</Nav.Link>
           <Nav.Link className="custom-nav-link" onClick={() => navigate('/chatbot-interactions')}>Chatbot Logs</Nav.Link>
-          <Nav.Link className="custom-nav-link" onClick={() => navigate('/api/notes')}>NoteKeeper</Nav.Link>
+          <Nav.Link className="custom-nav-link" onClick={() => navigate('/')}>NoteKeeper</Nav.Link>
 
         </Nav>
       </Navbar.Collapse>
