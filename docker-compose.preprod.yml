@@ -13,7 +13,7 @@ services:
 
   notekeeper:
     build:
-      context: .
+      context: ./notekeeper
       dockerfile: notekeeper/Dockerfile
     ports:
       - "8080:8080"
