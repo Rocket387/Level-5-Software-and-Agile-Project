@@ -19,15 +19,23 @@ Future uses:
 
 
 To start the application in the development environment
-docker-compose -f docker-compose.dev.yml build
-docker-compose -f docker-compose.dev.yml up 
+
+
+# bring everything down
+docker compose -f docker-compose.dev.yml down
+
+# rebuild & start
+docker compose -f docker-compose.dev.yml up --build -d
+
+can also use below command
 
 docker-compose -f docker-compose.dev.yml build --no-cache
-docker-compose -f docker-compose.dev.yml up -d
 
+# lint the backend
+docker compose -f docker-compose.dev.yml run --rm notekeeper flake8 .
 
-
-
+# run backend tests
+docker compose -f docker-compose.dev.yml run --rm notekeeper pytest
 
 
 
