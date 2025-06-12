@@ -28,7 +28,8 @@ export const login = (payload) =>
 
 export const logout = () =>
   api.post('/api/auth/logout', {}, {
-    headers: { 'Content-Type': 'application/json' }
+    headers: { 'Content-Type': 'application/json' },
+    withCredentials: true
   });
 
 // Notes
@@ -38,7 +39,9 @@ export const notekeeperCreate = (payload) =>
   });
 
 export const notekeeperFetch = () =>
-  api.get('/api/notes');
+  api.get('/api/notes', {
+    withCredentials: true  // Helps with session-based login/logout
+  });
 
 export const notekeeperUpdate = (noteId, payload) =>
   api.put(`/api/notes/${noteId}`, payload, {
@@ -53,5 +56,8 @@ export const chatbotSend = (user_input) =>
   api.post('/api/chat', { user_input }, {
     headers: { 'Content-Type': 'application/json' }
   });
+
+export const fetchChatbotInteractions = (params) =>
+  api.get('/api/admin/chatbot-interactions', { params });
 
 export default api;

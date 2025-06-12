@@ -34,7 +34,7 @@ const NoteKeeper = ({ currentUser, currentUserRole }) => {
     try {
       if (editingNote) {
         // Update note
-        await axios.put(`/api/notes/${editingNote.id}`, { ...newNote });
+        await axios.put(`/api/notes/${editingNote.id}`, { description: newNote.description });
         setMessage('Note updated successfully.');
         setEditingNote(null);
       } else {
@@ -96,14 +96,14 @@ const NoteKeeper = ({ currentUser, currentUserRole }) => {
           <td>{note.date}</td>
           <td>{note.info}</td>
           <td>
-            {(isNoteOwner || isAdmin) && (
+            {note.canEdit && (
               <Button variant="primary" size="sm" onClick={() => handleEdit(note)}>
                 Edit
               </Button>
             )}
           </td>
           <td>
-            {(isNoteOwner || isAdmin) && (
+            {note.canDelete && (
               <Button
                 variant="danger"
                 size="sm"

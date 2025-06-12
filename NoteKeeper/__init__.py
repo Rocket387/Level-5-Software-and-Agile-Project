@@ -17,7 +17,7 @@ def create_app(config_class=Config):
     # Enable CORS
     from flask_cors import CORS
     CORS(app,
-     resources={r"/*": {"origins": "*"}},
+     resources={r"/*": {"origins": "http://localhost"}},
      supports_credentials=True,
      methods=["GET", "HEAD", "POST", "OPTIONS", "PUT", "PATCH", "DELETE"],
      allow_headers=["Content-Type", "Authorization", "X-Requested-With"])
@@ -61,6 +61,7 @@ def create_app(config_class=Config):
     from .views import views
     from .auth import auth
     from .chatbot import chatbot
+
 
     #importing and registering the blueprint from the factory in views.py and auth.py
     app.register_blueprint(views, url_prefix='/')

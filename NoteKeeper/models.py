@@ -50,11 +50,14 @@ class Role(db.Model):
     users = db.relationship('User', back_populates='role')
     notes = db.relationship('Note', back_populates='role')
 
+#class creates table to hold fields relating to chatbot interactions
+#Role table includes Primary key in the ID column
+#and Foreign key linking to user table
 class ChatbotInteraction(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     message = db.Column(db.String(1000), nullable=False)
     response = db.Column(db.String(1000), nullable=False)
     timestamp = db.Column(db.DateTime, default=datetime.utcnow)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=True)  # nullable for anonymous interactions
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=True)
 
     user = db.relationship('User', back_populates='chatbot_interactions')

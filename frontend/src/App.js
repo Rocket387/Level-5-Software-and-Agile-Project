@@ -15,11 +15,6 @@ function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [currentUser, setCurrentUser] = useState(''); 
 
-  const handleLogout = () => {
-    setIsLoggedIn(false); 
-    setCurrentUser(''); 
-  };
-
   const handleLogin = (username) => { 
     setIsLoggedIn(true);
     setCurrentUser(username);
@@ -33,7 +28,11 @@ function App() {
           <img src={logo} alt="Prime Video Logo" id="appLogo" />
         </div>
 
-        {isLoggedIn && <NavbarComponent onLogout={handleLogout} />}
+        {isLoggedIn && <NavbarComponent onLogout={() => {
+  setIsLoggedIn(false);
+  setCurrentUser(null);
+}} />
+}
 
         <div className="componentContainer">
           <Routes>
@@ -46,7 +45,7 @@ function App() {
           </Routes>
         </div>
         <Footer />
-        <ChatBot />
+        {isLoggedIn && <ChatBot />}
       </Router>
     </div>
   );

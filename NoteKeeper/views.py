@@ -1,6 +1,6 @@
 from flask import Blueprint, request, jsonify
 from flask_login import login_required, current_user
-from notekeeper.models import Note, User
+from notekeeper.models import Note, User, ChatbotInteraction
 from notekeeper.extensions import db
 from datetime import datetime
 
@@ -11,16 +11,21 @@ views = Blueprint('views', __name__)
 @login_required
 def get_notes():
     notes = Note.query.join(User).add_columns(
-        Note.id, Note.info, Note.date, User.alias.label('userAlias')
+        Note.id, Note.info, Note.date, Note.user_id, User.alias.label('userAlias')
     ).order_by(Note.date.desc()).all()
 
     notes_list = []
     for note in notes:
+        can_edit = (current_user.role.roleName == 'Admin') or (note.user_id == current_user.id)
+        can_delete = (current_user.role.roleName == 'Admin') or (note.user_id == current_user.id)
+
         notes_list.append({
             'id': note.id,
             'info': note.info,
             'date': note.date.strftime('%d-%M-%Y'),
-            'userAlias': note.userAlias
+            'userAlias': note.userAlias,
+            'canEdit': can_edit,
+            'canDelete': can_delete
         })
 
     return jsonify({'notes': notes_list}), 200
@@ -78,3 +83,40 @@ def delete_note(note_id):
     db.session.delete(note)
     db.session.commit()
     return jsonify({'message': 'Note deleted successfully'}), 200
+
+@views.route('/api/admin/chatbot-interactions', methods=['GET'])
+@login_required
+def search_chatbot_interactions():
+    if not current_user.has_role('Admin'):
+        return jsonify({'error': 'You do not have permission.'}), 403
+
+    user_alias = request.args.get('userAlias')
+    keyword = request.args.get('keyword')
+    start_date = request.args.get('startDate')
+    end_date = request.args.get('endDate')
+
+    query = ChatbotInteraction.query.join(User, isouter=True)
+
+    if user_alias:
+        query = query.filter(User.alias.ilike(f"%{user_alias}%"))
+    if keyword:
+        query = query.filter(
+            (ChatbotInteraction.message.ilike(f"%{keyword}%")) |
+            (ChatbotInteraction.response.ilike(f"%{keyword}%"))
+        )
+    if start_date:
+        query = query.filter(ChatbotInteraction.timestamp >= start_date)
+    if end_date:
+        query = query.filter(ChatbotInteraction.timestamp <= end_date)
+
+    interactions = query.order_by(ChatbotInteraction.timestamp.desc()).all()
+
+    interactions_data = [{
+        'id': i.id,
+        'message': i.message,
+        'response': i.response,
+        'timestamp': i.timestamp.strftime('%Y-%m-%d %H:%M:%S'),
+        'userAlias': i.user.alias if i.user else 'Anonymous'
+    } for i in interactions]
+
+    return jsonify({'interactions': interactions_data}), 200
