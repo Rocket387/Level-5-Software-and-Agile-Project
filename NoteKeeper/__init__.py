@@ -17,7 +17,7 @@ def create_app(config_class=Config):
     # Enable CORS
     from flask_cors import CORS
     CORS(app,
-     resources={r"/*": {"origins": "http://localhost"}},
+     resources={r"/*": {"origins": "*"}},
      supports_credentials=True,
      methods=["GET", "HEAD", "POST", "OPTIONS", "PUT", "PATCH", "DELETE"],
      allow_headers=["Content-Type", "Authorization", "X-Requested-With"])

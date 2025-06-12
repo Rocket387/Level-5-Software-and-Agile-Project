@@ -10,22 +10,19 @@ views = Blueprint('views', __name__)
 @views.route('/api/notes', methods=['GET'])
 @login_required
 def get_notes():
-    notes = Note.query.join(User).add_columns(
-        Note.id, Note.info, Note.date, Note.user_id, User.alias.label('userAlias')
-    ).order_by(Note.date.desc()).all()
+    all_notes = Note.query.order_by(Note.date.desc()).all()
 
     notes_list = []
-    for note in notes:
-        can_edit = (current_user.role.roleName == 'Admin') or (note.user_id == current_user.id)
-        can_delete = (current_user.role.roleName == 'Admin') or (note.user_id == current_user.id)
-
+    for note in all_notes:
         notes_list.append({
-            'id': note.id,
-            'info': note.info,
-            'date': note.date.strftime('%d-%M-%Y'),
-            'userAlias': note.userAlias,
-            'canEdit': can_edit,
-            'canDelete': can_delete
+            'id'       : note.id,
+            'info'     : note.info,
+            'date'     : note.date.strftime('%d-%M-%Y'),
+            'userAlias': note.user.alias,   # relationship attribute
+            'canEdit'  : note.user_id == current_user.id
+                           or current_user.role.roleName == 'Admin',
+            'canDelete': note.user_id == current_user.id
+                           or current_user.role.roleName == 'Admin'
         })
 
     return jsonify({'notes': notes_list}), 200
