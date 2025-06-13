@@ -1,5 +1,5 @@
-from flask import Blueprint, request, jsonify
-from .models import User
+from flask import Blueprint, request, jsonify, session
+from .models import User, Role
 from werkzeug.security import generate_password_hash, check_password_hash
 from . import db
 from flask_login import login_user, logout_user, current_user
@@ -60,10 +60,12 @@ def signup():
     elif password1 != password2:
         return jsonify({'error': 'Passwords do not match.'}), 400
     else:
+        user_role = Role.query.filter_by(roleName='User').first()
         new_user = User(
             email=email,
             alias=alias,
-            password=generate_password_hash(password1, method='pbkdf2:sha256')
+            password=generate_password_hash(password1, method='pbkdf2:sha256'),
+            role_id=user_role.id
         )
         db.session.add(new_user)
         db.session.commit()
@@ -74,6 +76,7 @@ def signup():
 def logout():
     if current_user.is_authenticated:
         logout_user()
+        session.clear()
         return jsonify({'message': 'Logged out successfully.'}), 200
     else:
         return jsonify({'error': 'No user is currently logged in.'}), 401
