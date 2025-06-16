@@ -5,7 +5,7 @@ FROM python:3.10
 WORKDIR /app
 
 # Copy app code
-COPY notekeeper/ /app/notekeeper
+COPY . .
 COPY notekeeper/requirements.txt /app/requirements.txt
 
 # Install dependencies
