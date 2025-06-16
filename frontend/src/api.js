@@ -40,7 +40,7 @@ export const notekeeperCreate = (payload) =>
 
 export const notekeeperFetch = () =>
   api.get('/api/notes', {
-    withCredentials: true  // Helps with session-based login/logout
+    withCredentials: true  
   });
 
 export const notekeeperUpdate = (noteId, payload) =>

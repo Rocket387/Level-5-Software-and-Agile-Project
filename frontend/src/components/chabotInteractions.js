@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { Button, Form, Table, Alert } from 'react-bootstrap';
-import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { fetchChatbotInteractions } from '../api';
 

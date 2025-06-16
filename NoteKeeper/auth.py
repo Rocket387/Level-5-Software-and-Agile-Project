@@ -11,10 +11,6 @@ def contains_invalid_chars(value):
     invalid_chars = re.compile(r"[<>/\"'`;]")
     return bool(invalid_chars.search(value))
 
-def is_valid_email(email):
-    email_pattern = re.compile(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$')
-    return email_pattern.match(email)
-
 @auth.route('/api/auth/login', methods=['POST'])
 def login():
     data = request.get_json()

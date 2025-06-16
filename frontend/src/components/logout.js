@@ -1,4 +1,4 @@
-import axios from 'axios';
+
 import { logout } from '../api';  
 
 const handleLogout = async (navigate) => {  
