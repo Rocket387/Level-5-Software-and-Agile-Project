@@ -5,6 +5,9 @@ on:
     branches:
       - main
 
+env:
+  PROJECT_DIR: Level-5-Software-and-Agile-Project
+
 jobs:
   build-test-lint:
     runs-on: ubuntu-latest
@@ -20,15 +23,19 @@ jobs:
         uses: docker/setup-buildx-action@v3
 
       - name: Run Backend Lint (flake8)
+        working-directory: ${{ env.PROJECT_DIR }}
         run: docker compose -f docker-compose.dev.yml run --rm notekeeper flake8 .
 
       - name: Run Backend Tests (pytest)
+        working-directory: ${{ env.PROJECT_DIR }}
         run: docker compose -f docker-compose.dev.yml run --rm notekeeper pytest
 
       - name: Run Frontend Lint (eslint)
+        working-directory: ${{ env.PROJECT_DIR }}
         run: docker compose -f docker-compose.dev.yml run --rm frontend npm run lint
 
       - name: Run Frontend Tests (Jest)
+        working-directory: ${{ env.PROJECT_DIR }}
         run: docker compose -f docker-compose.dev.yml run --rm frontend npm test -- --watchAll=false
 
   build-and-push:
@@ -51,11 +58,13 @@ jobs:
           password: ${{ env.DOCKERHUB_PASSWORD }}
 
       - name: Build and push backend image
+        working-directory: ${{ env.PROJECT_DIR }}
         run: |
           docker build -f Dockerfile.prod -t $DOCKERHUB_USERNAME/notekeeper:latest .
           docker push $DOCKERHUB_USERNAME/notekeeper:latest
 
       - name: Build and push frontend image
+        working-directory: ${{ env.PROJECT_DIR }}
         run: |
           docker build -f frontend/Dockerfile.prod -t $DOCKERHUB_USERNAME/frontend:latest ./frontend
           docker push $DOCKERHUB_USERNAME/frontend:latest
@@ -68,10 +77,13 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Deploy to Dev Environment
+        working-directory: ${{ env.PROJECT_DIR }}
         run: docker compose -f docker-compose.dev.yml up -d --build
 
       - name: Deploy to Preprod Environment
+        working-directory: ${{ env.PROJECT_DIR }}
         run: docker compose -f docker-compose.preprod.yml up -d --build
 
       - name: Deploy to Prod Environment
+        working-directory: ${{ env.PROJECT_DIR }}
         run: docker compose -f docker-compose.prod.yml up -d --build
