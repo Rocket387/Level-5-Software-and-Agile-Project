@@ -1,10 +1,22 @@
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify, send_from_directory
 from flask_login import login_required, current_user
 from notekeeper.models import Note, User, ChatbotInteraction
 from notekeeper.extensions import db
 from datetime import datetime
+import os
 
 views = Blueprint('views', __name__)
+
+
+@views.route('/', defaults={'path': ''})
+@views.route('/<path:path>')
+def serve_react(path):
+    build_dir = os.path.join(os.path.dirname(__file__), '..', 'frontend', 'build')
+    if path != "" and os.path.exists(os.path.join(build_dir, path)):
+        return send_from_directory(build_dir, path)
+    else:
+        return send_from_directory(build_dir, 'index.html')
+
 
 # GET all notes
 @views.route('/api/notes', methods=['GET'])

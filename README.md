@@ -15,8 +15,28 @@ Future uses:
 - This web app will be further built on to include information on when team members are on A/L and which team member is Oncall
 
 
-* If running locally please run install -r requirements.txt in terminal to ensure all libraries are added
+* If running locally without Docker please run these commands in terminal to ensure all libraries are added
 
+/usr/bin/python3 -m venv venv
+source venv/bin/activate
+
+pip install -r NoteKeeper/requirements.txt 
+
+
+* If you run into pkgutil.ImpImporter error  please ensure you are using a python version <3.12 and your pip is compatible with you python version, you can check using:
+
+python --version
+pip --version
+
+python -m pip install --upgrade pip setuptools
+python -m pip install -r requirements.txt
+
+then in one terminal run 
+cd frontend
+npm install      # Only once
+npm run build 
+
+and in a second temrinal start the main.py file
 
 To start the application in the development environment
 

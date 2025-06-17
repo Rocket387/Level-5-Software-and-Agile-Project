@@ -8,10 +8,10 @@ WORKDIR /app
 
 COPY NoteKeeper/ /app/notekeeper
 
-COPY NoteKeeper/requirements.txt /app/requirements.txt
+COPY requirements.txt /app/requirements.txt
 
 # Install dependencies
-RUN pip install --no-cache-dir -r /app/requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
 
 # Build chatbot model during build, so final image includes model + pkl files
 RUN python notekeeper/train_model.py

@@ -2,11 +2,18 @@ services:
   - type: web
     name: my-flask-app
     env: python
-    region: Frankfurt # or another region close to your users
-    buildCommand: pip install --upgrade pip && pip install -r requirements.txt
+    region: Frankfurt
+    buildCommand: |
+      pip install --upgrade pip
+      pip install -r requirements.txt
+      cd frontend && npm install && npm run build
     startCommand: gunicorn main:app
     envVars:
       - key: SECRET_KEY
         value: "ENTER-KEY"
       - key: DATABASE_URL
         value: "sqlite:///PVWebAppDB.db"
+      - key: FLASK_ENV
+        value: production
+      - key: PORT
+        value: 10000
