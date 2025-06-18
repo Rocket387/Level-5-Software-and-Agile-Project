@@ -1,11 +1,7 @@
 import axios from 'axios';
 
 function getUrl() {
-  if (process.env.CODESPACES === "true") {
-    return `https://${process.env.CODESPACE_NAME}-5300.app.github.dev`;
-  } else {
-    return `http://localhost:8080`;  // Your backend Flask port
-  }
+  return process.env.REACT_APP_API_BASE || 'http://localhost:8080';
 }
 
 const baseURL = getUrl();
