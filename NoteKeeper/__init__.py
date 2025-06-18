@@ -28,10 +28,7 @@ def create_app(config_class=Config):
     
     csp = {
     'default-src': [
-        '\'self\'',
-        'https://fonts.googleapis.com',
-        'https://level-5-software-and-agile-project.onrender.com',
-        'https://fonts.gstatic.com/s/barlow/v12/7cHpv4kjgoGqM7E_DMs5ynghnQ.woff2'
+        '\'self\''
     ],
     'script-src': [
         '\'self\'',
@@ -41,6 +38,10 @@ def create_app(config_class=Config):
         '\'self\'',
         'https://fonts.googleapis.com'
     ],
+    'font-src': [
+        "'self'",
+        'https://fonts.gstatic.com'
+    ],
     'img-src': [
         '\'self\'',
         'data:'
@@ -48,7 +49,8 @@ def create_app(config_class=Config):
     'connect-src': [
         '\'self\'',
         'https://level-5-software-and-agile-project.onrender.com',
-        'http://localhost:8080/api/auth/login '
+        'http://localhost:3000',
+        'http://localhost:8080'
     ]
     }
     Talisman(app, content_security_policy=csp, force_https=False)
