@@ -9,7 +9,7 @@ from .extensions import db #imports SQL Alchemy from extensions, separate to pre
 from os import path #for local runs
 from flask_login import LoginManager #handles users logging in and out sessions
 from werkzeug.security import generate_password_hash #secure checks for passwords and hashing passwords
-from .models import User, Role, Note #importing classes in models.py
+from .models import User, Role, Note, ChatbotInteraction #importing classes in models.py
 from .config import Config #importing Config class in config.py
 from datetime import datetime, timedelta #imports datetime for database entries
 from .chatbot import chatbot #importing chatbot.py to load intents and model
@@ -92,6 +92,7 @@ def create_app(config_class=Config):
         create_roles()
         create_admin_user()
         create_notes()
+        db.create_all() 
 
     login_manager=LoginManager()
     login_manager.login_view='auth.login'
