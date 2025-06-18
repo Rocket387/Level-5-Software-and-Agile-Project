@@ -1,4 +1,7 @@
 #importing required libraries and routes
+import nltk
+nltk.download('punkt')
+
 from flask import Flask #adds Flask framework for URL routing and page rendering
 from .extensions import db #imports SQL Alchemy from extensions, separate to prevent circular calls
 from os import path #for local runs
