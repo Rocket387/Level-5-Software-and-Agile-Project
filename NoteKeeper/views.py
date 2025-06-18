@@ -1,7 +1,7 @@
 from flask import Blueprint, request, jsonify, send_from_directory
 from flask_login import login_required, current_user
-from notekeeper.models import Note, User, ChatbotInteraction
-from notekeeper.extensions import db
+from .models import Note, User, ChatbotInteraction 
+from .extensions import db
 from datetime import datetime
 import os
 

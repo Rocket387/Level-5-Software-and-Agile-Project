@@ -68,6 +68,10 @@ def create_app(config_class=Config):
     app.register_blueprint(auth, url_prefix='/')
     app.register_blueprint(chatbot, url_prefix='/api') #registers chatbot blueprint
 
+    @app.route("/health")
+    def health():
+        return "OK", 200
+    
     #setting up database and initializing it with the function calls
     with app.app_context():
         create_database(app)
@@ -85,6 +89,7 @@ def create_app(config_class=Config):
         return User.query.get(int(id)) #retrieves user id from database using SQLAlchemy
 
     return app
+    
 
 #function to create app database if it does not already exist
 def create_database(app):

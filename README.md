@@ -57,8 +57,27 @@ docker compose -f docker-compose.dev.yml run --rm notekeeper flake8 .
 # run backend tests
 docker compose -f docker-compose.dev.yml run --rm notekeeper pytest
 
+# run OWASP Zap scan manually
+start container
 
+cd zap into folder
 
+docker build -t zap-scanner .
+
+docker run --rm zap-scanner /zap-scan.sh http://host.docker.internal:8080
+
+open zap_report.html
+
+----------
+OR if using zap-automation
+----------
+cd into zap folder
+
+docker run --rm \
+  --network 20notekeeperpythonwebapp_app-network \
+  -v "$(pwd)":/zap/wrk \
+  zaproxy/zap-stable \
+  zap.sh -cmd -autorun /zap/wrk/zap-automation.yml
 
 
 

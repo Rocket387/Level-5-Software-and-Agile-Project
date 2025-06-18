@@ -1,0 +1,37 @@
+env:
+  contexts:
+    - name: NoteKeeperContext
+      urls:
+        - "http://notekeeper:8080/api/"
+      includePaths:
+        - "http://notekeeper:8080/.*"
+      authentication:
+        method: script
+        script: login-script.js  
+        parameters:
+          scriptEngine: ECMAScript
+        scriptParams:
+          email: "admin@pvteam.com"
+          password: "seA8Yellow!"
+      users:
+        - name: test-user
+          credentials:
+            email: "admin@pvteam.com"
+            password: "seA8Yellow!"
+      sessionManagement:
+        method: cookie
+
+jobs:
+  - type: spider
+    parameters:
+      context: NoteKeeperContext
+      user: test-user
+  - type: activeScan
+    parameters:
+      context: NoteKeeperContext
+      user: test-user
+  - type: report
+    parameters:
+      template: traditional-html
+      reportDir: /zap
+      reportFile: zap_report.html
