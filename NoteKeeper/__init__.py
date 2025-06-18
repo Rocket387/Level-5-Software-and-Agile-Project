@@ -68,7 +68,7 @@ def create_app(config_class=Config):
     app.register_blueprint(auth, url_prefix='/')
     app.register_blueprint(chatbot, url_prefix='/api') #registers chatbot blueprint
 
-    @app.route("/health")
+    @app.route("/health", methods=["GET"])
     def health():
         return "OK", 200
     
