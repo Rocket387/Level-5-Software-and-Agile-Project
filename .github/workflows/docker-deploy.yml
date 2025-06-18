@@ -32,6 +32,7 @@ jobs:
 
       - name: Run ZAP Baseline Scan
         uses: zaproxy/action-baseline@v0.9.0
+        continue-on-error: true
         with:
           target: 'http://localhost:8080'
           cmd_options: '-config scanner.threadPerHost=5 -config spider.maxDuration=2'

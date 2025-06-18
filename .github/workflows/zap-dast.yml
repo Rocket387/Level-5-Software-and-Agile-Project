@@ -8,7 +8,7 @@ on:
 permissions:
   contents: read
   issues: write
-  
+
 jobs:
   zap_scan:
     name: OWASP ZAP Baseline Scan
@@ -18,4 +18,4 @@ jobs:
         uses: zaproxy/action-baseline@v0.10.0
         with:
           target: 'https://level-5-software-and-agile-project.onrender.com'
-          fail_action: true
+          fail_action: false

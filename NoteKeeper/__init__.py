@@ -29,13 +29,12 @@ def create_app(config_class=Config):
     csp = {
     'default-src': [
         '\'self\'',
-        'https://trusted.cdn.com',
         'https://fonts.googleapis.com',
         'https://level-5-software-and-agile-project.onrender.com'
     ],
     'script-src': [
         '\'self\'',
-        'https://trusted.cdn.com'
+        'https://level-5-software-and-agile-project.onrender.com'
     ],
     'style-src': [
         '\'self\'',
