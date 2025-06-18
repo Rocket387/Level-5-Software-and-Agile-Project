@@ -30,7 +30,8 @@ def create_app(config_class=Config):
     'default-src': [
         '\'self\'',
         'https://fonts.googleapis.com',
-        'https://level-5-software-and-agile-project.onrender.com'
+        'https://level-5-software-and-agile-project.onrender.com',
+        'https://fonts.gstatic.com/s/barlow/v12/7cHpv4kjgoGqM7E_DMs5ynghnQ.woff2'
     ],
     'script-src': [
         '\'self\'',
@@ -47,7 +48,8 @@ def create_app(config_class=Config):
     'connect-src': [
         '\'self\'',
         'https://level-5-software-and-agile-project.onrender.com',
-    ],
+        'http://localhost:8080/api/auth/login '
+    ]
     }
     Talisman(app, content_security_policy=csp, force_https=False)
 
