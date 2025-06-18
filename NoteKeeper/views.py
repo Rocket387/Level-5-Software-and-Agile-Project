@@ -7,7 +7,7 @@ import os
 
 views = Blueprint('views', __name__)
 
-
+#linking frontend to backend
 @views.route('/', defaults={'path': ''})
 @views.route('/<path:path>')
 def serve_react(path):

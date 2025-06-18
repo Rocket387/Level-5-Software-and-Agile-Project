@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Form, Table, Modal } from 'react-bootstrap';
+import { Button, Form, Table} from 'react-bootstrap';
 import axios from 'axios';
 import 'react-datepicker/dist/react-datepicker.css';
 import {
   notekeeperCreate,
   notekeeperFetch,
-  notekeeperUpdate,
+  //notekeeperUpdate,
   notekeeperDelete
 } from '../api';
 
@@ -88,8 +88,6 @@ const NoteKeeper = ({ currentUser, currentUserRole }) => {
   </thead>
   <tbody>
     {notes.map((note) => {
-      const isNoteOwner = note.userAlias === currentUser;
-      const isAdmin = currentUserRole === 'Admin';
       return (
         <tr key={note.id}>
           <td>{note.userAlias}</td>

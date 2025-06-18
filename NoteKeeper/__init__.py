@@ -11,7 +11,8 @@ from .chatbot import chatbot #importing chatbot.py to load intents and model
 
 # function to create the web app, initializes database, create roles, admin and add notes
 def create_app(config_class=Config):
-    app = Flask(__name__)
+    app = Flask(__name__, static_folder="../frontend/build/static",
+    template_folder="../frontend/build")
     app.config.from_object(config_class)
 
     # Enable CORS
