@@ -18,7 +18,7 @@ def create_app(config_class=Config):
     # Enable CORS
     from flask_cors import CORS
     CORS(app,
-     resources={r"/*": {"origins": ["http://localhost", "http://localhost:3000", "*"]}},
+     resources={r"/*": {"origins": ["http://localhost", "http://localhost:3000", "*", "https://level-5-software-and-agile-project.onrender.com"]}},
      supports_credentials=True,
      methods=["GET", "HEAD", "POST", "OPTIONS", "PUT", "PATCH", "DELETE"],
      allow_headers=["Content-Type", "Authorization", "X-Requested-With"])
@@ -30,7 +30,8 @@ def create_app(config_class=Config):
     'default-src': [
         '\'self\'',
         'https://trusted.cdn.com',
-        'https://fonts.googleapis.com'
+        'https://fonts.googleapis.com',
+        'https://level-5-software-and-agile-project.onrender.com'
     ],
     'script-src': [
         '\'self\'',
@@ -43,7 +44,11 @@ def create_app(config_class=Config):
     'img-src': [
         '\'self\'',
         'data:'
-    ]
+    ],
+    'connect-src': [
+        '\'self\'',
+        'https://level-5-software-and-agile-project.onrender.com',
+    ],
     }
     Talisman(app, content_security_policy=csp, force_https=False)
 
