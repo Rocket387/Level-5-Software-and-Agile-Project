@@ -19,7 +19,7 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      # ← build both services first
+      
       - name: Build services
         run: docker compose -f docker-compose.dev.yml build frontend notekeeper
 
